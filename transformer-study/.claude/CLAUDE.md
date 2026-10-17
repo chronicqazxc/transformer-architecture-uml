@@ -1,0 +1,109 @@
+# CLAUDE.md
+
+## Project Concept
+
+Wayne is studying the Transformer architecture, with a focus on **decoder-only models** (GPT / Llama style). The study artifact is a PlantUML activity diagram, `plantuml_export.puml`, that walks one forward pass end to end with a concrete toy example (`["cat", "on", "desk"]`).
+
+Goal: keep polishing the diagram until it is **100% accurate and correct**, both conceptually and numerically. Accuracy matters more than brevity or style.
+
+**Both diagrams are multi-language (English, 繁體中文, 日本語, 한국어) from one source each. Every change to a diagram must keep all four languages in sync. See "Multi-language: required for every change" below.**
+
+## Files
+
+- `plantuml_export.puml`: the **generation / inference** diagram (source of truth). Edit this file in place.
+- `plantuml_training.puml`: the **training** diagram (also i18n-enabled, keys `tr_*`) (batch with shifted targets, forward pass, cross-entropy, backward pass, AdamW, evaluation). Its forward pass is the same architecture as the generation diagram, so keep the two consistent (norms, RoPE, SwiGLU, N layers).
+- `i18n/en.json`, `i18n/zh-tw.json`, `i18n/ja.json`, `i18n/ko.json`: every visible word of BOTH diagrams (generation keys have no prefix, training keys start with `tr_`). `render.sh` renders all languages; `check_i18n.py` is the key-parity check it runs first; `bundle.py` (also run by `render.sh`) writes the self-contained versions.
+- `bundle/plantuml_export.puml`, `bundle/plantuml_training.puml`: GENERATED, never edit. Self-contained copies (translations inlined, language set by one line `!$lang = "en"` near the top). Open these in any PlantUML editor or preview that cannot read `i18n/` (a local editor started in another folder, online editors); change the language by editing that line.
+- Colors mean the same thing in both diagrams (see each legend): input = light blue, RMSNorm = yellow, attention = blue, residual = orange, FFN = green, LM head = purple. The training diagram adds loss = red, gradients = pink, optimizer = gray, evaluation = green.
+
+## How to Work Here
+
+- Terminology: say **layer** (N layers, `n_layer`), and "transformer block" only as a clarifier, e.g. "N layers (transformer blocks)". Keep this consistent in both diagrams.
+- **Multi-language rule: no change is finished until all four languages are updated.** Any edit that adds, removes, rewords or moves visible text (label, note, partition, condition, legend, title) goes through the JSON keys, and the same change is made in `zh-tw.json`, `ja.json` and `ko.json`. A numeric or structural fix (a corrected value, a fork instead of a sequence) must also be checked in every language's translated notes, because numbers and explanations are repeated there.
+- Act as a technical reviewer first, editor second. When something in the diagram is wrong, say what is wrong and why, then fix it.
+- Re-verify every number by recomputing it (softmax, scaling, weighted sums, element-wise products). Show the arithmetic when you correct a value.
+- Keep the toy example internally consistent: the same values must flow through scores → scaling → mask → softmax → attention map → `Z = Attention_Map × V`. If one value changes, update everything downstream and the notes that quote it.
+- Prefer the decoder-only, modern-LLM conventions (Llama-style) the diagram already targets: causal masking, RoPE on Q/K, pre-norm with RMSNorm, SwiGLU FFN (gate/up/down), LM head, autoregressive loop with KV cache. Call out where the diagram deviates from the original 2017 "Attention Is All You Need" design (post-norm, ReLU FFN, sinusoidal positions, encoder-decoder).
+- Distinguish prefill (whole prompt in parallel) from decode (one new token per step, reusing the KV cache) wherever the diagram touches them.
+- Diagram convention: a PlantUML `fork` / `fork again` means the branches run in parallel (e.g. Q/K/V projections, per-token RoPE, per-row scores, attention heads, per-token FFN, gate/up). Steps that depend on each other (scale → mask → softmax, W_O → residual → RMSNorm) must be sequential, never a fork.
+- Make minimal, targeted edits. Do not restructure or restyle the diagram unless asked. Preserve Wayne's note wording where it is correct.
+- Explain the *why* briefly when correcting, since this is a learning project.
+
+## Accuracy Checklist (review against this each pass)
+
+- Shapes: `X` is `[seq_len, d_model]`; per-head `Q/K/V` are `[seq_len, d_head]`; `d_head = d_model / n_heads`; scores are `[seq_len, seq_len]`; `Z` is `[seq_len, d_head]` per head, concatenated to `[seq_len, d_model]` before `W_O`.
+- Scaling factor is `sqrt(d_k)`; the example factor (4.0) should imply `d_k = 16`.
+- Causal mask is applied to the scaled scores before softmax; masked entries are `-∞`, and each softmax row sums to 1.
+- RoPE rotates Q and K only (never V), per position and per head, after the linear projection.
+- Residual connections add the sublayer's *input* to its output; norm placement (pre-norm vs post-norm) is stated consistently.
+- FFN: gate and up projections run in parallel from the same input, `SiLU(gate) ⊙ up`, then down projection back to `d_model`.
+- Only the last position's vector goes to the LM head at decode time; logits have size `vocab_size`.
+- Sampling (temperature, top-k, top-p) follows softmax; the new token is appended and the loop repeats.
+
+## Known Issues
+
+Fixed (2026-10-12): softmax values (82/18 and 27/72/1), attention map, `z_on` / `z_desk` and the Context Matrix, `embedding_desk` label, "Causal Mask" typo, scale → mask is now sequential, Gate/Up is now a parallel `fork`, head count wording (N heads), "Incoming" / "Vector A" typos.
+
+Fixed (2026-10-12, later): norm placement is now pre-norm RMSNorm (pre-attention, pre-FFN, plus a final RMSNorm before the LM Head), the "Prefill" partition is renamed "Q K V Projection and RoPE" with prefill/decode and KV cache explained in notes, the layer loop is "All N layers (transformer blocks) done?", and the autoregressive loop-back is an explicit `repeat ... repeat while`.
+
+Fixed (2026-10-14): checked against the Llama-style mini-LM code (`../wayne-mini-lm/`, commit 8d10441, which matches the diagram on RMSNorm, RoPE, SwiGLU, no biases, final norm, KV cache, untied head). Diagram updated: "SiLU" instead of "SiLU or GELU", FFN width "about 2.7 to 3.5 times", sampling split into Temperature/Top-K on logits, then Softmax, then Top-P and sampling, note that training keeps all positions (loss on every position, targets shifted by one), note that decode computes only the last score row, "N separate vectors" in the W_O note.
+
+Deliberate differences between the diagram and mini-LM (not errors): mini-LM applies the head to all positions and the engine takes the last row (the diagram slices first, which is the efficient order); dropout 0.2 in training only; RoPE uses the rotate-half formula with base 10000; no GQA; `block_size` 128 with cache rebuild; character-level vocab and `d_head` 32 versus the toy example (words, scale 4.0).
+
+Done (2026-10-14, later): titles say Generation vs Training; generation diagram recolored with a `plain` theme, stereotype colors, colored partitions and a legend; training diagram created (`plantuml_training.puml`); both render without errors.
+
+Still open:
+
+- Heads 2 and 3 are placeholders; the W_O note still describes head roles loosely.
+- The generation diagram is very tall (4198 px at 12 pt); consider splitting attention and FFN into sub-diagrams if it gets harder to read.
+
+## Multi-language: required for every change
+
+Both `plantuml_export.puml` and `plantuml_training.puml` are ONE source each. Every visible word is looked up with `$t("key")`; the language is chosen at render time.
+
+### Change checklist (do all of it, every time)
+
+1. **Edit through keys.** Never type a raw string in a `.puml`. To change wording, edit the value in `i18n/en.json`. To add text, add a new key (next free number for its kind) to `en.json` and use `$t("key")` in the diagram. To remove text, delete the key everywhere.
+2. **Update all three translations in the same change** (`zh-tw.json`, `ja.json`, `ko.json`): reword, add, or delete the same key. Do not leave a stale translation: a translated note that still shows an old number or old explanation is a bug, worse than a missing one (a missing key safely falls back to English). If a value is a formula, number or technical name, leave the key out of the translations on purpose.
+3. **If a number, formula or fact changes, search every language** for the old value (grep the old number in `i18n/*.json`) and fix it in all of them.
+4. **Run `./render.sh plantuml_export plantuml_training`** (or just one name). It runs `check_i18n.py` first, regenerates `bundle/*.puml`, then renders `out/<lang>/<name>.svg` and `.png` for all four languages. Commit the regenerated `bundle/` together with the change. Fix any error before reporting.
+5. **Look at the output**, at least the English render and one CJK render, for overflowing notes, missing glyphs or awkward line breaks; adjust line breaks in the JSON, not in the .puml.
+6. **Say in the final answer** which keys changed, and flag the translations as drafted by Claude for Wayne's review.
+7. **Structure changes** (new fork, new partition, new loop) use keys for their names and conditions too, and keep the convention that a `fork` means parallel steps.
+
+### Details
+
+- Render all languages: `./render.sh` (outputs `out/<lang>/plantuml_export.svg` and `.png`). Single language by hand, from this folder: `java -DPLANTUML_LIMIT_SIZE=16384 -jar plantuml.jar -DLANG_JA=1 -tsvg plantuml_export.puml` (`-DLANG_ZH_TW=1`, `-DLANG_JA=1`, `-DLANG_KO=1`; none = English). `render.sh` with no argument renders only the generation diagram; use `./render.sh plantuml_export plantuml_training` for both.
+- **Never write a raw string in the .puml.** Add a key to `i18n/en.json` (source of truth and fallback), then translate it in the other three files. A key missing from a language falls back to English, so untranslated keys are safe.
+- Keys are `kind_NNN` with an underscore (`act_` activity, `note_` note body, `part_` partition, `cond_` loop condition and branch labels, `legend_`, `title_`). Dotted keys break PlantUML's JSON lookup.
+- Do not translate: toy numbers and vectors, the tokens "cat" / "on" / "desk", tensor names (W_Q, R_position, ...), formulas, and technical terms (RoPE, RMSNorm, SwiGLU, softmax, KV cache, token, logits stay English inside translated sentences). Pure-data notes (a single `[1.0, 0.0]` line) stay in the .puml because PlantUML would re-serialize them as JSON.
+- Terminology follows the mini-LM UI (`../wayne-mini-lm/ui/lang-*.js`). Say "layer" with "transformer block" as the clarifier in every language.
+- Notes: store line breaks as real newlines (a normal `\n` inside the JSON string) and keep each note's leading indentation. Use block-form notes only (`note right` ... `end note`); a one-line `note right: $t(...)` breaks on a multi-line value. The first test showed a literal `\\n` stays literal inside notes.
+- Translations were drafted by Claude and need Wayne's review (especially ja and ko).
+- The `' --- i18n:begin` / `' --- i18n:end ---` marker lines in each .puml header are required: `bundle.py` replaces what is between them. Keep them when editing the header.
+- Preview error "Data parsing error" near `!return $en[$key]`, or the message "i18n/en.json not found": the previewer ran PlantUML from a folder without `i18n/`. Use the `bundle/` version, or render from this folder.
+- Language switch gotchas: `%getenv` is blocked by PlantUML's default security profile, so use `-D` flags with `!ifdef`. `%load_json` paths are relative to the working directory, so run from this folder (`render.sh` does).
+- Acceptance check used for the conversion (2026-10-14): the English render had the same text as the pre-i18n diagram (golden SVG text comparison: 238 text elements for generation, 83 for training, both identical).
+
+## Live preview and export (plant-uml-editor)
+
+Wayne previews and exports with the local editor in the sibling folder `../../plant-uml-editor` (its own `.claude/CLAUDE.md` has the details). It has a language dropdown and a project-folder dropdown; the preview re-renders when either changes and SVG/PNG export uses the selected language (file suffix `.ja`, `.ko`, `.zh-tw`).
+
+- Start: `cd ../../plant-uml-editor && PUML_BASE_DIRS=<this folder> npm start` → http://localhost:8765. In the page choose the `transformer-study` folder, then open `plantuml_export.puml` or `plantuml_training.puml`.
+- Source files need that folder choice (they read `i18n/`). `bundle/*.puml` work in any folder and are switched by the same dropdown (it rewrites the `!$lang` line), so keep the `CHANGE THE LANGUAGE HERE` comment and the `!$lang = "xx"` line in the bundle exactly as `bundle.py` writes them: the page's regex depends on them.
+- If the editor changes how it passes the language, update this section and `bundle.py` together.
+- Everything in this repo is portable: `lib/plantuml.jar` is downloaded on first run, so the folder can be zipped without dependencies (leave out `lib/`, `out/`, `.DS_Store`; the editor's `lib/`, `node_modules/`, `.backup/`).
+
+## Rendering
+
+No local install. A throwaway renderer works: download `plantuml.jar` from the PlantUML GitHub releases into its own empty directory (for example `/tmp/plantuml-bin/`), then render outside the repo:
+
+`java -DPLANTUML_LIMIT_SIZE=16384 -Djava.awt.headless=true -jar /tmp/plantuml-bin/plantuml.jar -tpng -o /tmp/plantuml-out <file>.puml`
+
+The size property matters: by default PlantUML cuts images taller than 4096 px, which silently drops the legend. The PlantUML web server also works for a quick check.
+
+PlantUML gotchas found in this project:
+
+- Color actions with a stereotype (`:text; <<attn>>` plus `skinparam activity { BackgroundColor<<attn>> ... }`). The inline form `#color:text;` fails to parse after the second `fork again`.
+- Do not use `<<input>>` or `<<output>>` as stereotype names: they are reserved and draw flag-shaped boxes.
+- `partition "Name" #color { ... }` works for colored partitions.

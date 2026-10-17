@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>PlantUML Editor</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; height: 100vh; display: flex; flex-direction: column; font: 14px system-ui, sans-serif; }
+  header { display: flex; gap: 8px; align-items: center; padding: 8px 12px; background: #1f2937; color: #fff; }
+  header h1 { font-size: 15px; margin: 0 12px 0 0; }
+  button, select { font: inherit; padding: 4px 10px; border-radius: 4px; border: 1px solid #4b5563; background: #374151; color: #fff; cursor: pointer; }
+  button:hover { background: #4b5563; }
+  #status { margin-left: auto; font-size: 12px; opacity: .8; }
+  main { flex: 1; display: flex; min-height: 0; }
+  #editor { width: 45%; min-width: 120px; resize: none; border: 0; padding: 12px; font: 13px/1.5 ui-monospace, Menlo, monospace; tab-size: 2; outline: none; }
+  #divider { width: 6px; flex: none; cursor: col-resize; background: #d1d5db; }
+  #divider:hover, #divider.drag { background: #3b82f6; }
+  body.dragging { cursor: col-resize; user-select: none; }
+  body.dragging #preview { pointer-events: none; }
+  #preview { min-width: 120px; flex: 1; overflow: auto; padding: 12px; background: #f9fafb; position: relative; }
+  #preview svg { transform-origin: top left; }
+  #error { color: #b91c1c; white-space: pre-wrap; padding: 12px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>PlantUML Editor</h1>
+  <button id="open">Open file…</button>
+  <select id="files"><option value="">Open saved…</option></select>
+  <button id="save">Save</button>
+  <select id="lang" title="Diagram language (-D flag)">
+    <option value="en">English</option><option value="zh-tw">繁體中文</option><option value="ja">日本語</option><option value="ko">한국어</option>
+  </select>
+  <select id="dir" title="Folder PlantUML runs in (for relative includes / i18n files)"></select>
+  <button id="rerender" title="Re-render (re-reads include / i18n files)">⟳</button>
+  <button id="svg">Export SVG</button>
+  <button id="png">Export PNG</button>
+  <button id="zoomOut">−</button><button id="zoomIn">+</button><button id="zoomFit">100%</button>
+  <span id="status">ready</span>
+</header>
+<main>
+  <textarea id="editor" spellcheck="false"></textarea>
+  <div id="divider" title="Drag to resize"></div>
+  <div id="preview"></div>
+</main>
+<script>
+const $ = (id) => document.getElementById(id);
+const editor = $('editor'), preview = $('preview'), status = $('status'), files = $('files');
+const SAMPLE = `@startuml
+actor User
+User -> Editor: type PlantUML
+Editor -> Server: POST /render
+Server --> Editor: SVG
+Editor --> User: live preview
+@enduml
+`;
+let current = localStorage.getItem('puml:name') || '';
+let zoom = 1, timer, seq = 0;
+
+editor.value = localStorage.getItem('puml:code') ?? SAMPLE;
+
+const lang = $('lang'), dirSel = $('dir');
+lang.value = localStorage.getItem('puml:lang') || 'en';
+const renderUrl = (fmt) => `/render?format=${fmt}&lang=${lang.value}&dir=${encodeURIComponent(dirSel.value || 'default')}`;
+// Bundled diagrams (bundle.py) hard-code the language in a `!$lang = "xx"` line under this marker
+// instead of reading -D flags, so set it from the dropdown before sending.
+const payload = () => /CHANGE THE LANGUAGE HERE/.test(editor.value)
+  ? editor.value.replace(/^(!\$lang\s*=\s*)"[\w-]+"/m, `$1"${lang.value}"`)
+  : editor.value;
+const exportName = (ext) => baseName() + (lang.value === 'en' ? '' : '.' + lang.value) + '.' + ext;
+
+async function refresh() {
+  const id = ++seq;
+  status.textContent = 'rendering…';
+  try {
+    const r = await fetch(renderUrl('svg'), { method: 'POST', body: payload() });
+    const svg = await r.text();
+    if (id !== seq) return;
+    if (!r.ok) { preview.innerHTML = '<div id="error"></div>'; $('error').textContent = svg; status.textContent = 'error'; return; }
+    preview.innerHTML = svg;
+    applyZoom();
+    status.textContent = 'rendered';
+  } catch (e) {
+    preview.innerHTML = `<div id="error">${e.message}</div>`;
+    status.textContent = 'error';
+  }
+}
+function applyZoom() { const s = preview.querySelector('svg'); if (s) s.style.transform = `scale(${zoom})`; }
+
+editor.addEventListener('input', () => {
+  localStorage.setItem('puml:code', editor.value);
+  clearTimeout(timer);
+  timer = setTimeout(refresh, 300);
+});
+editor.addEventListener('keydown', (e) => {
+  if (e.key === 'Tab') { e.preventDefault(); document.execCommand('insertText', false, '  '); }
+  if ((e.metaKey || e.ctrlKey) && e.key === 's') { e.preventDefault(); save(); }
+});
+
+function download(blob, name) {
+  const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: name });
+  a.click(); URL.revokeObjectURL(a.href);
+}
+const baseName = () => (current || 'diagram').replace(/\.puml$/, '');
+async function exportAs(fmt) {
+  const r = await fetch(renderUrl(fmt), { method: 'POST', body: payload() });
+  if (!r.ok) { status.textContent = 'export failed: ' + (await r.text()).slice(0, 200); return; }
+  download(await r.blob(), exportName(fmt));
+}
+$('svg').onclick = () => exportAs('svg');
+$('png').onclick = () => exportAs('png');
+lang.onchange = () => { localStorage.setItem('puml:lang', lang.value); refresh(); };
+dirSel.onchange = () => { localStorage.setItem('puml:dir', dirSel.value); refresh(); };
+$('rerender').onclick = refresh;
+window.addEventListener('focus', refresh); // pick up edited include / i18n files
+$('zoomIn').onclick = () => { zoom *= 1.2; applyZoom(); };
+$('zoomOut').onclick = () => { zoom /= 1.2; applyZoom(); };
+$('zoomFit').onclick = () => { zoom = 1; applyZoom(); };
+
+async function loadFiles() {
+  const names = await (await fetch('/files')).json();
+  files.innerHTML = '<option value="">Open saved…</option>' + names.map((n) => `<option>${n}</option>`).join('');
+  files.value = names.includes(current) ? current : '';
+}
+let handle = null; // FileSystemFileHandle of the file opened/saved from disk
+const picker = { types: [{ description: 'PlantUML', accept: { 'text/plain': ['.puml', '.plantuml', '.wsd', '.txt'] } }] };
+
+function setSource(name, h) {
+  handle = h; current = name;
+  if (h) localStorage.removeItem('puml:name'); else if (name) localStorage.setItem('puml:name', name); else localStorage.removeItem('puml:name');
+  document.title = (name ? name + ' – ' : '') + 'PlantUML Editor';
+  files.value = !h && [...files.options].some((o) => o.value === name) ? name : '';
+}
+async function writeHandle(h) {
+  const w = await h.createWritable();
+  await w.write(editor.value);
+  await w.close();
+}
+async function save() {
+  try {
+    if (handle) { await writeHandle(handle); status.textContent = 'saved ' + handle.name; return; }
+    if (window.showSaveFilePicker && !current) {
+      const h = await showSaveFilePicker({ suggestedName: 'diagram.puml', ...picker });
+      await writeHandle(h); setSource(h.name, h); status.textContent = 'saved ' + h.name; return;
+    }
+  } catch (e) { if (e.name !== 'AbortError') status.textContent = 'save failed: ' + e.message; return; }
+  // fallback: save into the server's diagrams/ folder
+  let name = current || prompt('File name (saved in diagrams/):', 'diagram.puml');
+  if (!name) return;
+  if (!name.endsWith('.puml')) name += '.puml';
+  const r = await fetch('/files/' + encodeURIComponent(name), { method: 'PUT', body: editor.value });
+  if (!r.ok) { status.textContent = 'save failed: ' + await r.text(); return; }
+  await loadFiles(); setSource(name, null);
+  status.textContent = 'saved ' + name;
+}
+function loadText(text) {
+  editor.value = text;
+  localStorage.setItem('puml:code', text);
+  refresh();
+}
+$('open').onclick = async () => {
+  try {
+    if (window.showOpenFilePicker) {
+      const [h] = await showOpenFilePicker(picker);
+      loadText(await (await h.getFile()).text()); setSource(h.name, h);
+    } else { // Safari/Firefox: no direct write-back, so saving falls back to diagrams/
+      const inp = Object.assign(document.createElement('input'), { type: 'file', accept: '.puml,.plantuml,.wsd,.txt' });
+      inp.onchange = async () => { const f = inp.files[0]; if (f) { loadText(await f.text()); setSource('', null); } };
+      inp.click();
+    }
+  } catch (e) { if (e.name !== 'AbortError') status.textContent = 'open failed: ' + e.message; }
+};
+$('save').onclick = save;
+files.onchange = async () => {
+  if (!files.value) { setSource('', null); return; }
+  loadText(await (await fetch('/files/' + encodeURIComponent(files.value))).text());
+  setSource(files.value, null);
+};
+
+const divider = $('divider'), main = document.querySelector('main');
+const savedW = localStorage.getItem('puml:editorWidth');
+if (savedW) editor.style.width = savedW;
+divider.addEventListener('pointerdown', (e) => {
+  divider.setPointerCapture(e.pointerId);
+  divider.classList.add('drag'); document.body.classList.add('dragging');
+  const move = (ev) => {
+    const r = main.getBoundingClientRect();
+    const w = Math.min(Math.max(ev.clientX - r.left, 120), r.width - 126);
+    editor.style.width = w / r.width * 100 + '%';
+  };
+  const up = () => {
+    divider.classList.remove('drag'); document.body.classList.remove('dragging');
+    divider.removeEventListener('pointermove', move); divider.removeEventListener('pointerup', up);
+    localStorage.setItem('puml:editorWidth', editor.style.width);
+  };
+  divider.addEventListener('pointermove', move); divider.addEventListener('pointerup', up);
+});
+divider.addEventListener('dblclick', () => { editor.style.width = '45%'; localStorage.removeItem('puml:editorWidth'); });
+
+loadFiles().then(() => setSource(current, null));
+fetch('/config').then((r) => r.json()).then((c) => {
+  dirSel.innerHTML = c.dirs.map((d) => `<option value="${d.id}">${d.name}</option>`).join('');
+  const saved = localStorage.getItem('puml:dir');
+  if (c.dirs.some((d) => d.id === saved)) dirSel.value = saved;
+}).finally(refresh);
+</script>
+</body>
+</html>

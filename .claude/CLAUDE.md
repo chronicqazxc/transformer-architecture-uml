@@ -1,0 +1,48 @@
+# CLAUDE.md
+
+## Goal
+
+This kit has two goals:
+
+1. **Education: the decoder-only Transformer architecture.** Explain one forward pass (generation) and one training step of a GPT / Llama-style decoder-only model, with a concrete toy example, as PlantUML activity diagrams in four languages (English, 繁體中文, 日本語, 한국어). Accuracy matters more than brevity or style.
+2. **A static GitHub Pages site with the UML view.** The diagrams are published as a static site that renders the PlantUML live in the browser and lets the reader switch language. No server, no Java, no pre-rendered SVG/PNG as the deliverable.
+
+## Layout
+
+- `transformer-study/`: the content. Diagram sources, `i18n/*.json`, generated `bundle/*.puml`. Its own `.claude/CLAUDE.md` has the diagram rules (multi-language checklist, accuracy checklist); read it before touching any diagram.
+- `plant-uml-editor/`: the viewer/editor. Today a local tool (Node server + Java PlantUML). See its own `.claude/CLAUDE.md`.
+
+## Static site (GitHub Pages): built 2026-10-17
+
+- `site/` is the whole deliverable. `site/index.html` is the read-only viewer (diagram picker, language dropdown, zoom, SVG export; `?lang=ja&d=plantuml_training` in the URL). `site/vendor/` holds the pinned `@plantuml/core` 1.2026.6 build (MIT, TeaVM, with `viz-global.js`). `site/bundle/` is a copy of `transformer-study/bundle/`.
+- After any diagram or translation change: `./site/sync.sh` (checks keys, rebuilds the bundles, copies them into `site/bundle/`). `.github/workflows/pages.yml` runs the same script and deploys `site/` on push to `main` (needs Pages source set to "GitHub Actions" in the repo settings).
+- The page rewrites the bundle's `!$lang = "xx"` line from the dropdown; it never reads `i18n/`.
+- Browser-build limit: images taller than 4096 px are refused. Both diagrams now use `defaultFontSize 10` / `NoteFontSize 9`; the viewer retries with a smaller note size (down to 7) when it gets "too large", which zh-tw needs for `plantuml_export` (renders at about 3989 px). Margin is thin. The real fix is splitting `plantuml_export` (attention / FFN sub-diagrams). Do that before adding more notes.
+- Tested in a real browser: both diagrams render in en, zh-tw, ja, ko. Not yet done: a visual comparison against the jar output (the browser build emits more `<text>` elements, 275 vs 238 for generation, so the old text-count golden check does not apply).
+
+## Editor: two modes
+
+The local editor (`plant-uml-editor/`) stays as the authoring tool. The published page (`site/index.html`) is a separate **read-only viewer**: no editing UI, and it never calls `/render`, `/files` or `/config`.
+
+| Control | Local (dev) | GitHub Pages |
+|---|---|---|
+| Language dropdown | yes | **yes** |
+| Diagram picker (export / training) | yes | yes, a fixed list of the bundled diagrams |
+| Zoom, SVG export | yes | optional, keep if cheap |
+| Source textarea / view source | yes | **removed** |
+| Open file, Save, saved-files list | yes | **removed** |
+| Folder dropdown, re-render button | yes | **removed** |
+| PNG export | server-rendered | only if done in the browser (canvas); otherwise removed |
+
+Implementation rules:
+
+- Choose the mode explicitly (for example a build flag, a separate `viewer.html`, or `?mode=viewer`), not by hiding elements with CSS. The published page must not ship the editing UI or call `/render`, `/files`, `/config`.
+- Keep the local editor working for authoring; the viewer is an addition, not a rewrite.
+- No npm dependencies or build step for the page itself if avoidable. A GitHub Actions workflow may run `transformer-study/bundle.py` and copy `bundle/` plus the two PlantUML files into the deploy folder.
+- Language choice is remembered in `localStorage` (wrap in try/catch) and may also be in the URL (`?lang=ja`) so links can be shared.
+
+## Working rules
+
+- Diagram content changes follow `transformer-study/.claude/CLAUDE.md` (keys in `i18n/*.json`, all four languages, run `./render.sh`, commit regenerated `bundle/`).
+- Never publish anything that sends diagram text to an external service; the browser build renders locally.
+- This folder is not a git repository yet. Ask before running `git init`, creating a repo or pushing.

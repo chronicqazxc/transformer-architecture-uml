@@ -1,0 +1,154 @@
+@startuml
+' --- i18n:begin (bundle.py replaces this block with inline data; keep the markers) ---
+' ONE source, language chosen at render time (default en):
+'   -DLANG_ZH_TW=1 | -DLANG_JA=1 | -DLANG_KO=1      see render.sh
+' Needs the i18n/ folder next to the working directory (render.sh does that).
+' No i18n folder here (editor, online preview)? Use bundle/<this file>: self-contained.
+' Every visible word lives in i18n/<lang>.json (en.json is the source of truth
+' and the fallback). Never write a raw string below: add a key to the JSON files.
+!$lang = "en"
+!ifdef LANG_ZH_TW
+!$lang = "zh-tw"
+!endif
+!ifdef LANG_JA
+!$lang = "ja"
+!endif
+!ifdef LANG_KO
+!$lang = "ko"
+!endif
+!assert %file_exists("i18n/en.json") : "i18n/en.json not found. PlantUML must run from the transformer-study folder (render.sh does), or use the self-contained bundle/ version of this diagram."
+!$en = %load_json("i18n/en.json")
+!$loc = %load_json("i18n/" + $lang + ".json")
+' --- i18n:end ---
+!function $t($key)
+!if %json_key_exists($loc, $key)
+!return $loc[$key]
+!endif
+!return $en[$key]
+!endfunction
+!theme plain
+skinparam shadowing false
+skinparam defaultFontSize 10
+skinparam ArrowColor #555555
+skinparam ActivityBorderColor #555555
+skinparam ActivityDiamondBorderColor #555555
+skinparam NoteBackgroundColor #FAFAFA
+skinparam NoteBorderColor #B0B0B0
+skinparam NoteFontSize 9
+skinparam PartitionBorderColor #9E9E9E
+skinparam PartitionFontSize 13
+skinparam LegendBackgroundColor #FFFFFF
+skinparam LegendBorderColor #B0B0B0
+skinparam activity {
+  BackgroundColor<<data>> #D6EAF8
+  BackgroundColor<<model>> #AED6F1
+  BackgroundColor<<norm>> #FCF3CF
+  BackgroundColor<<head>> #D7BDE2
+  BackgroundColor<<loss>> #F5B7B1
+  BackgroundColor<<grad>> #FADBD8
+  BackgroundColor<<opt>> #D5D8DC
+  BackgroundColor<<eval>> #ABEBC6
+}
+title $t("tr_title_001")
+
+start
+:$t("tr_act_001"); <<data>>
+note right
+$t("tr_note_001")
+end note
+
+repeat
+  :$t("tr_act_002"); <<opt>>
+  note right
+$t("tr_note_002")
+  end note
+
+  :$t("tr_act_003"); <<data>>
+  note right
+$t("tr_note_003")
+  end note
+
+  !$p_tr_part_001 = $t("tr_part_001")
+  partition "$p_tr_part_001" #F4F6F7 {
+    :$t("tr_act_004"); <<data>>
+    :$t("tr_act_005"); <<model>>
+    note right
+$t("tr_note_004")
+    end note
+    :$t("tr_act_006"); <<norm>>
+    :$t("tr_act_007"); <<head>>
+    note right
+$t("tr_note_005")
+    end note
+  }
+
+  !$p_tr_part_002 = $t("tr_part_002")
+  partition "$p_tr_part_002" #FDEDEC {
+    fork
+      :$t("tr_act_008"); <<loss>>
+    fork again
+      :$t("tr_act_009"); <<loss>>
+    fork again
+      :$t("tr_act_010"); <<loss>>
+    end fork
+    note right
+$t("tr_note_006")
+    end note
+    :$t("tr_act_011"); <<loss>>
+    note right
+$t("tr_note_007")
+    end note
+  }
+
+  !$p_tr_part_003 = $t("tr_part_003")
+  partition "$p_tr_part_003" #FEF9E7 {
+    :$t("tr_act_012"); <<opt>>
+    :$t("tr_act_013"); <<grad>>
+    note right
+$t("tr_note_008")
+    end note
+    :$t("tr_act_014"); <<grad>>
+    :$t("tr_act_015"); <<opt>>
+    note right
+$t("tr_note_009")
+    end note
+  }
+
+  !$c_tr_cond_001 = $t("tr_cond_001")
+  !$c_tr_cond_002 = $t("tr_cond_002")
+  if ($c_tr_cond_001) then ($c_tr_cond_002)
+    :$t("tr_act_016"); <<eval>>
+    note right
+$t("tr_note_010")
+    end note
+    !$c_tr_cond_003 = $t("tr_cond_003")
+    !$c_tr_cond_004 = $t("tr_cond_004")
+    if ($c_tr_cond_003) then ($c_tr_cond_004)
+      :$t("tr_act_017"); <<eval>>
+    endif
+    :$t("tr_act_018"); <<eval>>
+    note right
+$t("tr_note_011")
+    end note
+  endif
+!$c_tr_cond_005 = $t("tr_cond_005")
+!$c_tr_cond_006 = $t("tr_cond_006")
+!$c_tr_cond_007 = $t("tr_cond_007")
+repeat while ($c_tr_cond_005) is ($c_tr_cond_006) not ($c_tr_cond_007)
+
+:$t("tr_act_019"); <<model>>
+stop
+
+legend right
+  |= $t("tr_legend_001") |= $t("tr_legend_002") |
+  |<#D6EAF8>   | $t("tr_legend_003") |
+  |<#AED6F1>   | $t("tr_legend_004") |
+  |<#FCF3CF>   | $t("tr_legend_005") |
+  |<#D7BDE2>   | $t("tr_legend_006") |
+  |<#F5B7B1>   | $t("tr_legend_007") |
+  |<#FADBD8>   | $t("tr_legend_008") |
+  |<#D5D8DC>   | $t("tr_legend_009") |
+  |<#ABEBC6>   | $t("tr_legend_010") |
+  $t("tr_legend_011")
+endlegend
+@enduml

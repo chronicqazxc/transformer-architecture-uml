@@ -1,0 +1,5 @@
+.DS_Store
+**/lib/plantuml.jar
+node_modules/
+.backup/
+.playwright-mcp/
