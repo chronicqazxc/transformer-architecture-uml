@@ -49,8 +49,7 @@ skinparam activity {
   BackgroundColor<<opt>> #D5D8DC
   BackgroundColor<<eval>> #ABEBC6
 }
-title $t("tr_title_001")
-header $t("source_001")
+title $t("tr_title_001")$t("source_001")
 footer $t("source_001")
 
 start

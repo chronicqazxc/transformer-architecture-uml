@@ -32,8 +32,7 @@ skinparam activity {
   BackgroundColor<<ffn>> #ABEBC6
   BackgroundColor<<head>> #D7BDE2
 }
-title $t("title_001")
-header $t("source_001")
+title $t("title_001")$t("source_001")
 footer $t("source_001")
 
 start
