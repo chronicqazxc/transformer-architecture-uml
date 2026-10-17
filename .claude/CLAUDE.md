@@ -45,4 +45,11 @@ Implementation rules:
 
 - Diagram content changes follow `transformer-study/.claude/CLAUDE.md` (keys in `i18n/*.json`, all four languages, run `./render.sh`, commit regenerated `bundle/`).
 - Never publish anything that sends diagram text to an external service; the browser build renders locally.
-- This folder is not a git repository yet. Ask before running `git init`, creating a repo or pushing.
+- Ask before pushing or changing anything outward-facing (repo settings, workflow triggers). Commits end with the `Co-Authored-By` line from the session attribution.
+
+## Repo and deployment
+
+- Repo: https://github.com/chronicqazxc/transformer-architecture-uml (branch `main`). The kit folder is the repo root. `origin` uses SSH (`git@github.com:chronicqazxc/transformer-architecture-uml.git`) because HTTPS has no credentials on this machine.
+- Live site: https://chronicqazxc.github.io/transformer-architecture-uml/ . Pages source is set to "GitHub Actions" (not "Deploy from a branch"). A push to `main` redeploys; first deploy verified 2026-10-17 (all 8 diagram/language combinations render on the live URL).
+- `.gitignore` leaves out `lib/plantuml.jar`, `node_modules/`, `.backup/`, `.DS_Store`, `.playwright-mcp/`. `transformer-study/out/` is committed but stale (rendered at the old font sizes) and the site does not use it; regenerate with `./render.sh plantuml_export plantuml_training` or delete it.
+- Checking a deploy: the GitHub MCP tools can list runs and read job logs (`actions_list`, `get_job_logs`). Triggering a run (`actions_run_trigger`) needs the fine-grained token to have **Actions: Read and write** on this repo; the user added it. Large file pushes go through `git`, not the MCP file tools.
