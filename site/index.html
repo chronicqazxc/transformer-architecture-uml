@@ -13,7 +13,7 @@
   button:hover { background: #4b5563; }
   #status { margin-left: auto; font-size: 12px; opacity: .8; }
   #preview { flex: 1; overflow: auto; padding: 16px; }
-  #preview svg { transform-origin: top left; }
+  #preview svg { display: block; margin: 0 auto; }
   #error { color: #b91c1c; white-space: pre-wrap; }
 </style>
 </head>
@@ -94,7 +94,18 @@ async function refresh() {
     status.textContent = 'error';
   }
 }
-function applyZoom() { const s = preview.querySelector('svg'); if (s) s.style.transform = `scale(${zoom})`; }
+function applyZoom() {
+  $('zoomFit').textContent = Math.round(zoom * 100) + '%';
+  const s = preview.querySelector('svg'); if (!s) return;
+  if (!s.dataset.w) {
+    const b = s.getBoundingClientRect();
+    s.dataset.w = parseFloat(s.getAttribute('width')) || b.width;
+    s.dataset.h = parseFloat(s.getAttribute('height')) || b.height;
+  }
+  s.style.maxWidth = 'none';
+  s.style.width = s.dataset.w * zoom + 'px';
+  s.style.height = s.dataset.h * zoom + 'px';
+}
 function syncUrl() {
   const u = new URL(location.href);
   u.searchParams.set('lang', langSel.value); u.searchParams.set('d', diagSel.value);
