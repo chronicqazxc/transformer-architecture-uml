@@ -1,6 +1,6 @@
 {
   "title_001": "Decoder-only Transformer (Llama-style): Generation / Inference Flow\\n",
-  "header_001": "Source: https://github.com/chronicqazxc/transformer-architecture-uml",
+  "source_001": "Source: https://github.com/chronicqazxc/transformer-architecture-uml",
   "act_001": "Tokens",
   "act_002": "Embedding",
   "note_001": "    [-0.251, 0.901, 0.464, 0.197] (embedding_cat)\n    [-0.688, -0.688, -0.884, 0.732] (embedding_on)\n    [0.202, 0.416, -0.959, 0.940] (embedding_desk)\n    * Let's say it is Matrix X\n    * 1st pass (Prefill): the whole prompt [\"cat\", \"on\", \"desk\"] is embedded\n      and processed in parallel.\n    * Later passes (Decode): only the newly generated token is embedded;\n      the earlier tokens' K and V are reused from the KV cache.",

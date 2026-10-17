@@ -34,6 +34,20 @@
 
 <script src="vendor/viz-global.js"></script>
 <script type="module">
+// PlantUML draws the source URL in header/footer as plain text; make it a real link.
+function linkify(svg) {
+  if (!svg) return;
+  const NS = 'http://www.w3.org/2000/svg';
+  svg.querySelectorAll('text').forEach((t) => {
+    const m = t.textContent.match(/https:\/\/github\.com\/chronicqazxc\/transformer-architecture-uml\s*$/);
+    if (!m) return;
+    const url = m[0].trim();
+    const a = document.createElementNS(NS, 'a');
+    a.setAttribute('href', url); a.setAttribute('target', '_blank');
+    a.style.cursor = 'pointer';
+    t.parentNode.insertBefore(a, t); a.appendChild(t);
+  });
+}
 import { renderToString } from './vendor/plantuml.js';
 
 const $ = (id) => document.getElementById(id);
@@ -87,6 +101,7 @@ async function refresh() {
     if (id !== seq) return;
     lastSvg = svg;
     preview.innerHTML = svg;
+    linkify(preview.querySelector('svg'));
     applyZoom();
     status.textContent = '';
   } catch (e) {
