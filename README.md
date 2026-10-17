@@ -19,3 +19,7 @@ This repo is the result. I share it for others who also find the paper difficult
 1. Edit the text in `transformer-study/i18n/*.json`. Change all four languages.
 2. Run `./site/sync.sh`.
 3. Push to `main`. GitHub Actions deploys the site.
+
+## License
+
+[MIT](LICENSE)
