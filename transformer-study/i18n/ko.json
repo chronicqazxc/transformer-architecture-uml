@@ -1,5 +1,6 @@
 {
   "title_001": "Decoder-only Transformer (Llama 스타일): 생성 / 추론 흐름\\n",
+  "footer_001": "소스: https://github.com/chronicqazxc/transformer-architecture-uml",
   "act_001": "토큰 (Tokens)",
   "act_002": "임베딩 (Embedding)",
   "note_001": "    [-0.251, 0.901, 0.464, 0.197] (embedding_cat)\n    [-0.688, -0.688, -0.884, 0.732] (embedding_on)\n    [0.202, 0.416, -0.959, 0.940] (embedding_desk)\n    * 이것을 행렬 X라고 하겠습니다\n    * 첫 번째 (Prefill): 프롬프트 전체 [\"cat\", \"on\", \"desk\"]를 한꺼번에 병렬로\n      임베딩하고 처리합니다.\n    * 이후 (Decode): 새로 생성된 토큰만 임베딩합니다.\n      앞선 토큰의 K와 V는 KV 캐시에서 재사용합니다.",

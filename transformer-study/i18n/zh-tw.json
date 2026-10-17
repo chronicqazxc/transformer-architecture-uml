@@ -1,5 +1,6 @@
 {
   "title_001": "Decoder-only Transformer（Llama 風格）：生成／推論流程\\n",
+  "footer_001": "原始碼： https://github.com/chronicqazxc/transformer-architecture-uml",
   "act_002": "嵌入 (Embedding)",
   "note_001": "    [-0.251, 0.901, 0.464, 0.197] (embedding_cat)\n    [-0.688, -0.688, -0.884, 0.732] (embedding_on)\n    [0.202, 0.416, -0.959, 0.940] (embedding_desk)\n    * 假設它就是矩陣 X\n    * 第 1 次（Prefill）：整段提示 [\"cat\", \"on\", \"desk\"] 一次平行做嵌入並處理。\n    * 之後（Decode）：只對新生成的 token 做嵌入；\n      先前 token 的 K 和 V 直接從 KV 快取取用。",
   "cond_001": "N 層（Transformer 區塊）都完成了嗎？",

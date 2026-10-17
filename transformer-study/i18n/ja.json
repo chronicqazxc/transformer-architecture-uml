@@ -1,5 +1,6 @@
 {
   "title_001": "Decoder-only Transformer (Llama 型): 生成・推論フロー\\n",
+  "footer_001": "ソース: https://github.com/chronicqazxc/transformer-architecture-uml",
   "act_001": "トークン (Tokens)",
   "act_002": "エンベディング (Embedding)",
   "note_001": "    [-0.251, 0.901, 0.464, 0.197] (embedding_cat)\n    [-0.688, -0.688, -0.884, 0.732] (embedding_on)\n    [0.202, 0.416, -0.959, 0.940] (embedding_desk)\n    * これを行列 X とします\n    * 1回目 (Prefill): プロンプト全体 [\"cat\", \"on\", \"desk\"] を一度に並列で\n      エンベディングして処理します。\n    * 2回目以降 (Decode): 新しく生成したトークンだけをエンベディングします。\n      それ以前のトークンの K と V は KV キャッシュから再利用します。",
