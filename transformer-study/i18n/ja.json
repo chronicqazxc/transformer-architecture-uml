@@ -1,5 +1,5 @@
 {
-  "title_001": "Decoder-only Transformer (Llama 型): 生成・推論フロー\\n",
+  "title_001": "Decoder-only Transformer (Llama 型): 生成・推論フロー",
   "source_001": "ソース: https://github.com/chronicqazxc/transformer-architecture-uml",
   "act_001": "トークン (Tokens)",
   "act_002": "エンベディング (Embedding)",
@@ -85,7 +85,7 @@
   "legend_007": "フィードフォワードネットワーク (SwiGLU)",
   "legend_008": "LM head、サンプリング",
   "legend_009": "fork = 並列に実行されるステップ。",
-  "tr_title_001": "Decoder-only Transformer (Llama 型): 学習フロー\\n",
+  "tr_title_001": "Decoder-only Transformer (Llama 型): 学習フロー",
   "tr_act_001": "コーパス (トークン ID が一続きになったもの)",
   "tr_note_001": "  文書ごとの最後に EOS の ID を付けます。\n  学習データと検証データに分けます。\n  mini-LM: 文字単位のトークン。",
   "tr_act_002": "このステップの学習率を決める",

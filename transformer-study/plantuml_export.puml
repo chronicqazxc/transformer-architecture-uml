@@ -47,7 +47,8 @@ skinparam activity {
   BackgroundColor<<ffn>> #ABEBC6
   BackgroundColor<<head>> #D7BDE2
 }
-title $t("title_001")$t("source_001")
+skinparam TitleFontStyle plain
+title <b>$t("title_001")</b>\n<size:10><color:#888888>$t("source_001")</color></size>
 footer $t("source_001")
 
 start

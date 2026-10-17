@@ -1,5 +1,5 @@
 {
-  "title_001": "Decoder-only Transformer (Llama-style): Generation / Inference Flow\\n",
+  "title_001": "Decoder-only Transformer (Llama-style): Generation / Inference Flow",
   "source_001": "Source: https://github.com/chronicqazxc/transformer-architecture-uml",
   "act_001": "Tokens",
   "act_002": "Embedding",
@@ -100,7 +100,7 @@
   "legend_007": "Feed-forward network (SwiGLU)",
   "legend_008": "LM head, sampling",
   "legend_009": "A fork = steps that run in parallel.",
-  "tr_title_001": "Decoder-only Transformer (Llama-style): Training Flow\\n",
+  "tr_title_001": "Decoder-only Transformer (Llama-style): Training Flow",
   "tr_act_001": "Corpus as one stream of token ids",
   "tr_note_001": "  An EOS id is appended after every document.\n  Split into train data and validation data.\n  mini-LM: character-level tokens.",
   "tr_act_002": "Pick the learning rate for this step",

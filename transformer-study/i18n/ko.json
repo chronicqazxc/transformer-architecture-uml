@@ -1,5 +1,5 @@
 {
-  "title_001": "Decoder-only Transformer (Llama 스타일): 생성 / 추론 흐름\\n",
+  "title_001": "Decoder-only Transformer (Llama 스타일): 생성 / 추론 흐름",
   "source_001": "소스: https://github.com/chronicqazxc/transformer-architecture-uml",
   "act_001": "토큰 (Tokens)",
   "act_002": "임베딩 (Embedding)",
@@ -85,7 +85,7 @@
   "legend_007": "피드포워드 네트워크 (SwiGLU)",
   "legend_008": "LM head, 샘플링",
   "legend_009": "fork = 병렬로 실행되는 단계.",
-  "tr_title_001": "Decoder-only Transformer (Llama 스타일): 학습 흐름\\n",
+  "tr_title_001": "Decoder-only Transformer (Llama 스타일): 학습 흐름",
   "tr_act_001": "코퍼스: 토큰 ID가 이어진 하나의 스트림",
   "tr_note_001": "  문서마다 끝에 EOS id를 붙입니다.\n  학습 데이터와 검증 데이터로 나눕니다.\n  mini-LM: 문자 단위 토큰.",
   "tr_act_002": "이 스텝의 학습률 정하기",
