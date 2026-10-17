@@ -50,7 +50,7 @@ skinparam activity {
   BackgroundColor<<eval>> #ABEBC6
 }
 title $t("tr_title_001")
-footer $t("footer_001")
+header $t("header_001")
 
 start
 :$t("tr_act_001"); <<data>>

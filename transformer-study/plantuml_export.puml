@@ -48,7 +48,7 @@ skinparam activity {
   BackgroundColor<<head>> #D7BDE2
 }
 title $t("title_001")
-footer $t("footer_001")
+header $t("header_001")
 
 start
 :$t("act_001"); <<inputs>>
