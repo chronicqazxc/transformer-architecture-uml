@@ -10,11 +10,24 @@ os.chdir(here)
 LANGS = ('en', 'zh-tw', 'ja', 'ko')
 data = {l: json.load(open(f'i18n/{l}.json', encoding='utf-8')) for l in LANGS}
 os.makedirs('bundle', exist_ok=True)
-for f in sorted(glob.glob('plantuml_*.puml')):
-    s = open(f, encoding='utf-8').read()
+def body(f):
+    return open(f, encoding='utf-8').read().split('\nstart\n', 1)[1].rsplit('\nstop\n', 1)[0]
+
+def full_source():
+    """plantuml_export.puml with its attention / FFN placeholder actions replaced by the sub-diagram bodies."""
+    s = open('plantuml_export.puml', encoding='utf-8').read()
+    for key, sub in (('act_048', 'plantuml_attention.puml'), ('act_049', 'plantuml_ffn.puml')):
+        ph = re.search(r'^[ \t]*:\$t\("' + key + r'"\); <<\w+>>\n', s, re.M)
+        assert ph, f'placeholder {key} not found in plantuml_export.puml'
+        s = s[:ph.start()] + body(sub) + '\n' + s[ph.end():]
+    return s
+
+sources = {f: open(f, encoding='utf-8').read() for f in sorted(glob.glob('plantuml_*.puml'))}
+sources['plantuml_full.puml'] = full_source()   # generated only in bundle/, never a source file
+for f, s in sources.items():
     used = set(re.findall(r'\$t\("([a-z_]+_\d+)"\)', s))
     inline = {l: {k: v for k, v in data[l].items() if k in used} for l in LANGS}
-    block = ("' --- bundled by bundle.py: DO NOT EDIT; edit " + f + " and i18n/*.json, then run ./render.sh ---\n"
+    block = ("' --- bundled by bundle.py: DO NOT EDIT; edit " + ("plantuml_export/attention/ffn.puml" if f == "plantuml_full.puml" else f) + " and i18n/*.json, then run ./render.sh ---\n"
              "' >>> CHANGE THE LANGUAGE HERE: en | zh-tw | ja | ko\n"
              '!$lang = "en"\n'
              "!$all = " + json.dumps(inline, ensure_ascii=False, separators=(',', ':')) + "\n"
