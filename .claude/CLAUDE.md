@@ -44,6 +44,7 @@ Implementation rules:
 ## Working rules
 
 - Diagram content changes follow `transformer-study/.claude/CLAUDE.md` (keys in `i18n/*.json`, all four languages, run `./render.sh`, commit regenerated `bundle/`).
+- Keep every `.claude/CLAUDE.md` under 200 lines. When one grows past that, move a self-contained topic (for example Known Issues, Rendering, the live-editor notes) into `.claude/rules/<topic>.md` in the same folder.
 - Never publish anything that sends diagram text to an external service; the browser build renders locally.
 - Ask before pushing or changing anything outward-facing (repo settings, workflow triggers). Commits end with the `Co-Authored-By` line from the session attribution.
 
