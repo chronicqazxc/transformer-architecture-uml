@@ -10,7 +10,7 @@
   "cond_006": "是",
   "cond_004": "遇到 EOS token 或達到最大長度？",
   "act_003": "RMSNorm（注意力之前）",
-  "note_002": "    Pre-norm（Llama 風格）：在注意力「之前」先對該層的輸入做正規化。\n    * 未經正規化的輸入另外保留，作為殘差流 (residual stream)。\n    * RMSNorm = x / sqrt(mean(x^2) + eps) x 學到的縮放 (gamma)（不做平均值置中，沒有 bias）。\n    * 每一次迴圈 = 一層 = 一個 Transformer 區塊（N 層，例如 Llama 3 8B 有 32 層），\n      每一層都有自己的權重（層與層之間不共用）。\n    「一層」的權重（Llama 3 8B，d_model = 4096）：訓練時學到，生成時固定不變。\n\n    |= 位置 |= 權重 |= 形狀 |\n    | 注意力前的 RMSNorm | gamma | 4096 |\n    | 注意力 (Attention) | W_Q | 4096 x 4096 |\n    |  | W_K | 4096 x 1024 |\n    |  | W_V | 4096 x 1024 |\n    |  | W_O | 4096 x 4096 |\n    | FFN 前的 RMSNorm | gamma | 4096 |\n    | FFN (SwiGLU) | W_gate | 4096 x 14336 |\n    |  | W_up | 4096 x 14336 |\n    |  | W_down | 14336 x 4096 |\n\n    每層約 218M 參數 x 32 層 = 70 億（再加 embedding 與 LM head 共 10 億，總計 80 億）。\n\n    為什麼注意力之前要正規化？\n    * 每一層都會把注意力的輸出「加回」殘差流，\n      所以殘差流的數值尺度會隨層數越疊越大（100、100.5、...）。\n    * 輸入太大會讓 Q x K^T 變得極大：softmax 飽和（輸出趨近 0 或 1），\n      梯度趨近 0，訓練變得不穩定（梯度爆炸 / 消失）。\n    * RMSNorm 把殘差流的「複本」重設回標準尺度，\n      注意力永遠拿到安全的輸入，輸出也保持小而穩定。\n    * 只有複本被正規化，殘差流本身不動，\n      梯度可以直接經過「+」回傳到淺層\n      （Pre-norm，不像原始 Transformer 的 post-norm：不需要脆弱的 warm-up）。\n    * RMSNorm 省掉 LayerNorm 的減平均值步驟：穩定效果相同，計算更省。",
+  "note_002": "    Pre-norm（Llama 風格）：在注意力「之前」先對該層的輸入做正規化。\n    * 未經正規化的輸入另外保留，作為殘差流 (residual stream)。\n    * RMSNorm = x / sqrt(mean(x^2) + eps) x 學到的縮放 (gamma)（不做平均值置中，沒有 bias）。\n\n    為什麼注意力之前要正規化？\n    * 每一層都會把注意力的輸出「加回」殘差流，\n      所以殘差流的數值尺度會隨層數越疊越大（100、100.5、...）。\n    * 輸入太大會讓 Q x K^T 變得極大：softmax 飽和（輸出趨近 0 或 1），\n      梯度趨近 0，訓練變得不穩定（梯度爆炸 / 消失）。\n    * RMSNorm 把殘差流的「複本」重設回標準尺度，\n      注意力永遠拿到安全的輸入，輸出也保持小而穩定。\n    * 只有複本被正規化，殘差流本身不動，\n      梯度可以直接經過「+」回傳到淺層\n      （Pre-norm，不像原始 Transformer 的 post-norm：不需要脆弱的 warm-up）。\n    * RMSNorm 省掉 LayerNorm 的減平均值步驟：穩定效果相同，計算更省。",
   "part_001": "多頭注意力 (Multi-Head Attention)",
   "part_002": "Q K V 投影與 RoPE",
   "part_003": "語意生成",
@@ -72,6 +72,7 @@
   "note_028": "Unembedding 層\n* 表格大小：W_vocab 矩陣的形狀是\n[Model_Dimension, Vocabulary_Size]。\n如果模型的向量維度是 4,096，\n詞典裡有 128,000 個詞 (token)，\n這個矩陣就是一張巨大的數字表。\n\n* Logits 輸出：最後的向量\n（維度 4,096）乘上\n這個 W_vocab 矩陣。\n這個運算同時把最後的向量\n與模型詞彙表裡的每一個詞做比較，\n輸出 128,000 個原始數字，\n稱為 Logits。",
   "act_044": "Temperature 與 Top-K",
   "act_046": "Top-P 與抽樣選擇",
+  "act_047": "輸入 token（提示 + 目前已生成的）",
   "note_029": "套用在 logits 上，在 Softmax 之前：\n* Logits 先除以 Temperature（0 = greedy，直接取 argmax）。\n* Top-K 只保留最高的 K 個 logits，其餘設為 -inf。",
   "note_030": "套用在機率上，在 Softmax 之後：\n* Top-P (nucleus) 保留機率加總達到 P 的\n  最小一組 token。\n* 然後從剩下的 token 中抽出下一個 token。",
   "note_031": "如果模型需要繼續寫（否），\n它會拿剛生成的字 (\"water\")\n回到 Embedding 步驟。\n只處理新的 token（Decode）；先前的\ntoken 由 KV 快取提供，不需要重新計算。",
@@ -134,5 +135,7 @@
   "tr_legend_008": "梯度（反向傳遞）",
   "tr_legend_009": "優化器、學習率",
   "tr_legend_010": "評估、checkpoint、範例",
-  "tr_legend_011": "fork = 平行執行的步驟。"
+  "tr_legend_011": "fork = 平行執行的步驟。",
+  "note_032": "    每一次迴圈 = 一層 = 一個 Transformer 區塊（N 層，例如 Llama 3 8B 有 32 層），\n    每一層都有自己的權重（層與層之間不共用）。\n\n    「一層」的權重（Llama 3 8B，d_model = 4096）：訓練時學到，生成時固定不變。\n\n    |= 位置 |= 權重 |= 形狀 |\n    | 注意力前的 RMSNorm | gamma | 4096 |\n    | 注意力 (Attention) | W_Q | 4096 x 4096 |\n    |  | W_K | 4096 x 1024 |\n    |  | W_V | 4096 x 1024 |\n    |  | W_O | 4096 x 4096 |\n    | FFN 前的 RMSNorm | gamma | 4096 |\n    | FFN (SwiGLU) | W_gate | 4096 x 14336 |\n    |  | W_up | 4096 x 14336 |\n    |  | W_down | 14336 x 4096 |\n\n    每層約 218M 參數 x 32 層 = 70 億（再加 embedding 與 LM head 共 10 億，總計 80 億）。",
+  "note_033": "迴圈起點：迴圈會回到這裡。\n第 1 次：輸入 = 提示。之後：輸入 + 上一輪取樣的 token。\n重複到遇到 EOS 或達到最大長度（判斷在最下方）。"
 }
