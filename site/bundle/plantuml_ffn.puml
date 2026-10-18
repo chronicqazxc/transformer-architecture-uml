@@ -1,0 +1,105 @@
+@startuml
+' --- bundled by bundle.py: DO NOT EDIT; edit plantuml_ffn.puml and i18n/*.json, then run ./render.sh ---
+' >>> CHANGE THE LANGUAGE HERE: en | zh-tw | ja | ko
+!$lang = "en"
+!$all = {"en":{"source_001":"Source: https://github.com/chronicqazxc/transformer-architecture-uml","part_006":"Feed-Forward Network","note_018":"        Deepens the model's logical\n        reasoning about the words","act_028":"Incoming token vector","note_019":"        The model takes your token vector\n        (e.g., size 4,096) and multiplies it by two separate\n        weight matrices to project it into a much larger\n        hidden dimension—typically about 2.7 to 3.5 times wider\n        (e.g., Llama 3 8B expands 4,096 to 14,336 numbers = 3.5x;\n        a small model may use 8/3 = 2.67x).","act_029":"W_gate","act_030":"Vector A (before)","act_031":"Activation function","note_020":"            SiLU (SwiGLU, as in Llama; some models use GELU instead)\n            * Negative / Low Values -> Crushed down to 0 (Turned OFF)\n            * Positive / High Values -> Allowed to pass through (Turned ON)","act_032":"Vector A (after)","act_033":"W_up","act_034":"Vector B","act_035":"Combine","note_021":"        Element-wise multiplication\n        [ 1.0,  0.0,  0.55 ]\n        (Activated Vector A / The Filter)\n        × [ 5.0,  9.0, -2.0  ]\n        (Raw Vector B / The Knowledge Data)\n        ---\n        = [ 5.0,  0.0, -1.1  ]\n        (The Combined Wide Vector)\n","act_036":"W_down","note_022":"        Down Projection Matrix;\n        shrinks it back down\n        to its original model dimension (e.g., 4,096)","act_037":"FFN for embedding 2","act_038":"FFN for embedding N","act_039":"Matrix Assembly","note_023":"    Stacking by Position Order\n    * A data organization step handled by GPU memory.\n    * It changes the physical layout of the vectors,\n      stacking them rows-by-row into a matrix block.\n    * Concatenation / Stacking (No math, just moving data blocks).","legend_001":"Color","legend_002":"Meaning","legend_003":"Input: tokens, embedding","legend_004":"RMSNorm (pre-norm)","legend_005":"Attention: Q/K/V, RoPE, scores, mask, softmax, mix, W_O","legend_006":"Residual connection (adds the saved stream back)","legend_007":"Feed-forward network (SwiGLU)","legend_008":"LM head, sampling","legend_009":"A fork = steps that run in parallel.","title_003":"Decoder-only Transformer (Llama-style): SwiGLU FFN in One Layer"},"zh-tw":{"source_001":"原始碼： https://github.com/chronicqazxc/transformer-architecture-uml","part_006":"前饋網路 (Feed-Forward Network)","note_018":"        加深模型\n        對詞語的邏輯推理","act_028":"輸入的 token 向量","note_019":"        模型拿到你的 token 向量\n        （例如維度 4,096），分別乘上兩個獨立的\n        權重矩陣，把它投影到大得多的\n        隱藏維度——通常寬 2.7 到 3.5 倍\n        （例如 Llama 3 8B 從 4,096 擴張到 14,336 個數字 = 3.5 倍；\n        小模型可能用 8/3 = 2.67 倍）。","act_030":"向量 A（之前）","act_031":"活化函數 (Activation function)","note_020":"            SiLU（SwiGLU，如 Llama；有些模型改用 GELU）\n            * 負值／低值 -> 被壓成 0（關閉）\n            * 正值／高值 -> 可以通過（開啟）","act_032":"向量 A（之後）","act_034":"向量 B","act_035":"合併","note_021":"        逐元素相乘\n        [ 1.0,  0.0,  0.55 ]\n        （活化後的向量 A／過濾器）\n        × [ 5.0,  9.0, -2.0  ]\n        （原始向量 B／知識資料）\n        ---\n        = [ 5.0,  0.0, -1.1  ]\n        （合併後的寬向量）\n","note_022":"        降維投影矩陣；\n        把它縮回\n        原本的模型維度（例如 4,096）","act_037":"第 2 個 embedding 的 FFN","act_038":"第 N 個 embedding 的 FFN","act_039":"矩陣組裝","note_023":"    依位置順序堆疊\n    * 由 GPU 記憶體處理的資料整理步驟。\n    * 它改變向量的實體排列，\n      一列一列堆成一個矩陣。\n    * 串接／堆疊（沒有數學運算，只是搬移資料區塊）。","legend_001":"顏色","legend_002":"意義","legend_003":"輸入：tokens、embedding","legend_004":"RMSNorm（pre-norm）","legend_005":"注意力：Q/K/V、RoPE、分數、遮罩、softmax、混合、W_O","legend_006":"殘差連接（把保留的殘差流加回來）","legend_007":"前饋網路 (SwiGLU)","legend_008":"LM head、抽樣","legend_009":"fork = 平行執行的步驟。","title_003":"Decoder-only Transformer（Llama 風格）：單層的 SwiGLU FFN"},"ja":{"source_001":"ソース: https://github.com/chronicqazxc/transformer-architecture-uml","part_006":"フィードフォワードネットワーク (Feed-Forward Network)","note_018":"        モデルの論理的な\n        単語の推論を深めます","act_028":"入ってくるトークンのベクトル","note_019":"        モデルはトークンのベクトル\n        (例: 次元 4,096) を、2つの別々の重み行列に掛けて、\n        ずっと大きな隠れ次元に射影します。\n        通常は約 2.7〜3.5 倍の幅です\n        (例: Llama 3 8B は 4,096 から 14,336 個に広がり 3.5 倍。\n        小さなモデルは 8/3 = 2.67 倍を使うこともあります)。","act_030":"ベクトル A (適用前)","act_031":"活性化関数 (Activation function)","note_020":"            SiLU (Llama のような SwiGLU。モデルによっては代わりに GELU)\n            * 負の値・小さい値 -> 0 に押しつぶされる (オフ)\n            * 正の値・大きい値 -> そのまま通る (オン)","act_032":"ベクトル A (適用後)","act_034":"ベクトル B","act_035":"結合","note_021":"        要素ごとの掛け算\n        [ 1.0,  0.0,  0.55 ]\n        (活性化後のベクトル A / フィルタ)\n        × [ 5.0,  9.0, -2.0  ]\n        (生のベクトル B / 知識のデータ)\n        ---\n        = [ 5.0,  0.0, -1.1  ]\n        (結合後の幅広ベクトル)\n","note_022":"        ダウン射影行列;\n        元のモデル次元\n        (例: 4,096) まで縮めます","act_037":"エンベディング 2 の FFN","act_038":"エンベディング N の FFN","act_039":"行列の組み立て","note_023":"    位置の順に積み重ねる\n    * GPU メモリが担当するデータ整理のステップ。\n    * ベクトルの物理的な配置を変えて、\n      行ごとに積み上げて行列にします。\n    * 連結・積み重ね (計算はなし、データのブロックを動かすだけ)。","legend_001":"色","legend_002":"意味","legend_003":"入力: トークン、エンベディング","legend_004":"RMSNorm (pre-norm)","legend_005":"アテンション: Q/K/V、RoPE、スコア、マスク、softmax、混合、W_O","legend_006":"残差接続 (取っておいたストリームを足し戻す)","legend_007":"フィードフォワードネットワーク (SwiGLU)","legend_008":"LM head、サンプリング","legend_009":"fork = 並列に実行されるステップ。","title_003":"Decoder-only Transformer (Llama 型): 1 層の SwiGLU FFN"},"ko":{"source_001":"소스: https://github.com/chronicqazxc/transformer-architecture-uml","part_006":"피드포워드 네트워크 (Feed-Forward Network)","note_018":"        모델의 논리적\n        단어 추론을 깊게 합니다","act_028":"들어오는 토큰 벡터","note_019":"        모델은 토큰 벡터\n        (예: 크기 4,096)를 두 개의 별도 가중치 행렬에 곱해\n        훨씬 큰 은닉 차원으로 투영합니다.\n        보통 약 2.7~3.5배 넓습니다\n        (예: Llama 3 8B는 4,096에서 14,336개로 늘어 3.5배.\n        작은 모델은 8/3 = 2.67배를 쓰기도 합니다).","act_030":"벡터 A (적용 전)","act_031":"활성화 함수 (Activation function)","note_020":"            SiLU (Llama 같은 SwiGLU. 일부 모델은 대신 GELU)\n            * 음수 / 낮은 값 -> 0으로 눌림 (꺼짐)\n            * 양수 / 높은 값 -> 그대로 통과 (켜짐)","act_032":"벡터 A (적용 후)","act_034":"벡터 B","act_035":"결합","note_021":"        원소별 곱셈\n        [ 1.0,  0.0,  0.55 ]\n        (활성화된 벡터 A / 필터)\n        × [ 5.0,  9.0, -2.0  ]\n        (원시 벡터 B / 지식 데이터)\n        ---\n        = [ 5.0,  0.0, -1.1  ]\n        (결합된 넓은 벡터)\n","note_022":"        다운 투영 행렬;\n        원래의 모델 차원\n        (예: 4,096)으로 다시 줄입니다","act_037":"임베딩 2의 FFN","act_038":"임베딩 N의 FFN","act_039":"행렬 조립","note_023":"    위치 순서대로 쌓기\n    * GPU 메모리가 처리하는 데이터 정리 단계.\n    * 벡터의 물리적 배치를 바꿔서\n      행 단위로 쌓아 행렬 블록으로 만듭니다.\n    * 연결 / 쌓기 (수학 연산 없음, 데이터 블록을 옮기기만 함).","legend_001":"색","legend_002":"의미","legend_003":"입력: 토큰, 임베딩","legend_004":"RMSNorm (pre-norm)","legend_005":"어텐션: Q/K/V, RoPE, 점수, 마스크, softmax, 혼합, W_O","legend_006":"잔차 연결 (보관한 스트림을 다시 더함)","legend_007":"피드포워드 네트워크 (SwiGLU)","legend_008":"LM head, 샘플링","legend_009":"fork = 병렬로 실행되는 단계.","title_003":"Decoder-only Transformer (Llama 스타일): 한 레이어의 SwiGLU FFN"}}
+!$en = $all.en
+!$loc = $all[$lang]
+!function $t($key)
+!if %json_key_exists($loc, $key)
+!return $loc[$key]
+!endif
+!return $en[$key]
+!endfunction
+!theme plain
+skinparam shadowing false
+skinparam defaultFontSize 10
+skinparam ArrowColor #555555
+skinparam ActivityBorderColor #555555
+skinparam ActivityDiamondBorderColor #555555
+skinparam NoteBackgroundColor #FAFAFA
+skinparam NoteBorderColor #B0B0B0
+skinparam NoteFontSize 9
+skinparam PartitionBorderColor #9E9E9E
+skinparam PartitionFontSize 13
+skinparam LegendBackgroundColor #FFFFFF
+skinparam LegendBorderColor #B0B0B0
+skinparam activity {
+  BackgroundColor<<inputs>> #D6EAF8
+  BackgroundColor<<norm>> #FCF3CF
+  BackgroundColor<<attn>> #AED6F1
+  BackgroundColor<<resid>> #FAD7A0
+  BackgroundColor<<ffn>> #ABEBC6
+  BackgroundColor<<head>> #D7BDE2
+}
+skinparam TitleFontStyle plain
+title <b>$t("title_003")</b>\n<size:10><color:#888888>$t("source_001")</color></size>
+footer $t("source_001")
+
+
+start
+  fork
+    !$p_006 = $t("part_006")
+    partition "$p_006" #EAFAF1 {
+      note
+$t("note_018")
+      endnote
+      :$t("act_028"); <<ffn>>
+      note right
+$t("note_019")
+      end note 
+      fork
+          :$t("act_029"); <<ffn>>
+          :$t("act_030"); <<ffn>>
+          note right
+            [12.5, -4.0, 0.2]
+          end note
+          :$t("act_031"); <<ffn>>
+          note right
+$t("note_020")
+          end note
+          :$t("act_032"); <<ffn>>
+          note right
+            [1.0, 0.0, 0.55]
+          end note
+
+      fork again
+          :$t("act_033"); <<ffn>>
+          :$t("act_034"); <<ffn>>
+          note left
+            [ 5.0,  9.0, -2.0]
+          end note
+      end fork
+
+      :$t("act_035"); <<ffn>>
+      note right
+$t("note_021")
+      end note
+
+      :$t("act_036"); <<ffn>>
+      note right
+$t("note_022")
+      end note
+
+    }
+  fork again 
+    :$t("act_037"); <<ffn>>
+  fork again 
+    :$t("act_038"); <<ffn>>
+  end fork
+
+  :$t("act_039"); <<ffn>>
+  note right
+$t("note_023")
+  endnote 
+stop
+legend right
+  |= $t("legend_001") |= $t("legend_002") |
+  |<#D6EAF8>   | $t("legend_003") |
+  |<#FCF3CF>   | $t("legend_004") |
+  |<#AED6F1>   | $t("legend_005") |
+  |<#FAD7A0>   | $t("legend_006") |
+  |<#ABEBC6>   | $t("legend_007") |
+  |<#D7BDE2>   | $t("legend_008") |
+  $t("legend_009")
+endlegend

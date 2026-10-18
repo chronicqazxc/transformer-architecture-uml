@@ -137,5 +137,9 @@
   "tr_legend_010": "評估、checkpoint、範例",
   "tr_legend_011": "fork = 平行執行的步驟。",
   "note_032": "    每一次迴圈 = 一層 = 一個 Transformer 區塊（N 層，例如 Llama 3 8B 有 32 層），\n    每一層都有自己的權重（層與層之間不共用）。\n\n    「一層」的權重（Llama 3 8B，d_model = 4096）：訓練時學到，生成時固定不變。\n\n    |= 位置 |= 權重 |= 形狀 |\n    | 注意力前的 RMSNorm | gamma | 4096 |\n    | 注意力 (Attention) | W_Q | 4096 x 4096 |\n    |  | W_K | 4096 x 1024 |\n    |  | W_V | 4096 x 1024 |\n    |  | W_O | 4096 x 4096 |\n    | FFN 前的 RMSNorm | gamma | 4096 |\n    | FFN (SwiGLU) | W_gate | 4096 x 14336 |\n    |  | W_up | 4096 x 14336 |\n    |  | W_down | 14336 x 4096 |\n\n    每層約 218M 參數 x 32 層 = 70 億（再加 embedding 與 LM head 共 10 億，總計 80 億）。",
-  "note_033": "迴圈起點：迴圈會回到這裡。\n第 1 次：輸入 = 提示。之後：輸入 + 上一輪取樣的 token。\n重複到遇到 EOS 或達到最大長度（判斷在最下方）。"
+  "note_033": "迴圈起點：迴圈會回到這裡。\n第 1 次：輸入 = 提示。之後：輸入 + 上一輪取樣的 token。\n重複到遇到 EOS 或達到最大長度（判斷在最下方）。",
+  "act_048": "Multi-Head Attention（細節見注意力圖）",
+  "act_049": "SwiGLU FFN（細節見 FFN 圖）",
+  "title_002": "Decoder-only Transformer（Llama 風格）：單層的 Multi-Head Attention",
+  "title_003": "Decoder-only Transformer（Llama 風格）：單層的 SwiGLU FFN"
 }

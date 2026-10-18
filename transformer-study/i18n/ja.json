@@ -138,5 +138,9 @@
   "tr_legend_010": "評価、チェックポイント、サンプル",
   "tr_legend_011": "fork = 並列に実行されるステップ。",
   "note_032": "    ループ1回 = 1層 = Transformer ブロック1つ (N 層。例: Llama 3 8B は 32 層)。\n    各層はそれぞれ独自の重みを持ちます (層どうしで共有しません)。\n\n    1層分の重み (Llama 3 8B, d_model = 4096): 学習で獲得し、生成時は固定です。\n\n    |= 場所 |= 重み |= 形状 |\n    | アテンション前の RMSNorm | gamma | 4096 |\n    | アテンション (Attention) | W_Q | 4096 x 4096 |\n    |  | W_K | 4096 x 1024 |\n    |  | W_V | 4096 x 1024 |\n    |  | W_O | 4096 x 4096 |\n    | FFN 前の RMSNorm | gamma | 4096 |\n    | FFN (SwiGLU) | W_gate | 4096 x 14336 |\n    |  | W_up | 4096 x 14336 |\n    |  | W_down | 14336 x 4096 |\n\n    1層あたり約 2.18 億パラメータ x 32 層 = 70 億 (+ embedding と LM head の 10 億 = 合計 80 億)。",
-  "note_033": "ループの開始点: ループはここに戻ります。\n1回目: 入力 = プロンプト。以降: 入力 + 前回サンプリングしたトークン。\nEOS か最大長に到達するまで繰り返します (判定は一番下)。"
+  "note_033": "ループの開始点: ループはここに戻ります。\n1回目: 入力 = プロンプト。以降: 入力 + 前回サンプリングしたトークン。\nEOS か最大長に到達するまで繰り返します (判定は一番下)。",
+  "act_048": "Multi-Head Attention（詳細は Attention 図）",
+  "act_049": "SwiGLU FFN（詳細は FFN 図）",
+  "title_002": "Decoder-only Transformer (Llama 型): 1 層の Multi-Head Attention",
+  "title_003": "Decoder-only Transformer (Llama 型): 1 層の SwiGLU FFN"
 }

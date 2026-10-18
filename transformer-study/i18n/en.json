@@ -154,5 +154,9 @@
   "tr_legend_010": "Evaluation, checkpoint, sample",
   "tr_legend_011": "A fork = steps that run in parallel.",
   "note_032": "    Each loop iteration is one layer = one transformer block (N layers, e.g. 32 in Llama 3 8B),\n    each with its own weights (not shared between layers).\n\n    Weights of ONE layer (Llama 3 8B, d_model = 4096): learned in training, frozen when generating.\n\n    |= Where |= Weight |= Shape |\n    | RMSNorm before attention | gamma | 4096 |\n    | Attention | W_Q | 4096 x 4096 |\n    |  | W_K | 4096 x 1024 |\n    |  | W_V | 4096 x 1024 |\n    |  | W_O | 4096 x 4096 |\n    | RMSNorm before FFN | gamma | 4096 |\n    | FFN (SwiGLU) | W_gate | 4096 x 14336 |\n    |  | W_up | 4096 x 14336 |\n    |  | W_down | 14336 x 4096 |\n\n    About 218M parameters per layer x 32 layers = 7B (+ embedding and LM head 1B = 8B in total).",
-  "note_033": "Loop start: the loop returns here.\n1st pass: input = prompt. Later: input + last sampled token.\nRepeats until EOS or max length (decision at the bottom)."
+  "note_033": "Loop start: the loop returns here.\n1st pass: input = prompt. Later: input + last sampled token.\nRepeats until EOS or max length (decision at the bottom).",
+  "act_048": "Multi-Head Attention (detail: attention diagram)",
+  "act_049": "SwiGLU FFN (detail: FFN diagram)",
+  "title_002": "Decoder-only Transformer (Llama-style): Multi-Head Attention in One Layer",
+  "title_003": "Decoder-only Transformer (Llama-style): SwiGLU FFN in One Layer"
 }

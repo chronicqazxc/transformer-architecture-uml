@@ -1,0 +1,178 @@
+@startuml
+' --- i18n:begin (bundle.py replaces this block with inline data; keep the markers) ---
+' ONE source, language chosen at render time (default en):
+'   -DLANG_ZH_TW=1 | -DLANG_JA=1 | -DLANG_KO=1      see render.sh
+' Needs the i18n/ folder next to the working directory (render.sh does that).
+' No i18n folder here (editor, online preview)? Use bundle/<this file>: self-contained.
+' Every visible word lives in i18n/<lang>.json (en.json is the source of truth
+' and the fallback). Never write a raw string below: add a key to the JSON files.
+!$lang = "en"
+!ifdef LANG_ZH_TW
+!$lang = "zh-tw"
+!endif
+!ifdef LANG_JA
+!$lang = "ja"
+!endif
+!ifdef LANG_KO
+!$lang = "ko"
+!endif
+!assert %file_exists("i18n/en.json") : "i18n/en.json not found. PlantUML must run from the transformer-study folder (render.sh does), or use the self-contained bundle/ version of this diagram."
+!$en = %load_json("i18n/en.json")
+!$loc = %load_json("i18n/" + $lang + ".json")
+' --- i18n:end ---
+!function $t($key)
+!if %json_key_exists($loc, $key)
+!return $loc[$key]
+!endif
+!return $en[$key]
+!endfunction
+!theme plain
+skinparam shadowing false
+skinparam defaultFontSize 10
+skinparam ArrowColor #555555
+skinparam ActivityBorderColor #555555
+skinparam ActivityDiamondBorderColor #555555
+skinparam NoteBackgroundColor #FAFAFA
+skinparam NoteBorderColor #B0B0B0
+skinparam NoteFontSize 9
+skinparam PartitionBorderColor #9E9E9E
+skinparam PartitionFontSize 13
+skinparam LegendBackgroundColor #FFFFFF
+skinparam LegendBorderColor #B0B0B0
+skinparam activity {
+  BackgroundColor<<inputs>> #D6EAF8
+  BackgroundColor<<norm>> #FCF3CF
+  BackgroundColor<<attn>> #AED6F1
+  BackgroundColor<<resid>> #FAD7A0
+  BackgroundColor<<ffn>> #ABEBC6
+  BackgroundColor<<head>> #D7BDE2
+}
+skinparam TitleFontStyle plain
+title <b>$t("title_002")</b>\n<size:10><color:#888888>$t("source_001")</color></size>
+footer $t("source_001")
+
+
+start
+  !$p_001 = $t("part_001")
+  partition "$p_001" #EBF5FB {
+  fork
+    !$p_002 = $t("part_002")
+    partition "$p_002" #EBF5FB {
+      !$p_003 = $t("part_003")
+      partition "$p_003" #EBF5FB {
+        fork
+          :$t("act_004"); <<attn>>
+        fork again
+          :$t("act_005"); <<attn>>
+        fork again
+          :$t("act_006"); <<attn>>
+        end fork
+        note
+$t("note_003")
+        endnote
+      }
+
+      !$p_004 = $t("part_004")
+      partition "$p_004" #EBF5FB {
+        fork
+          :$t("act_007"); <<attn>>
+        fork again
+          :$t("act_008"); <<attn>>
+        fork again 
+          :$t("act_009"); <<attn>>
+        fork again 
+          :$t("act_010"); <<attn>>
+        fork again 
+          :$t("act_011"); <<attn>>
+        end fork
+        note 
+$t("note_004")
+        endnote
+      }
+    }
+  
+    !$p_005 = $t("part_005")
+    partition "$p_005" #EBF5FB {
+      fork
+        :$t("act_012"); <<attn>>
+      fork again
+        :$t("act_013"); <<attn>>
+      fork again
+        :$t("act_014"); <<attn>>
+      end fork
+      
+      note
+$t("note_005")
+      endnote
+    }
+    
+    :$t("act_015"); <<attn>>
+    note
+$t("note_006")
+    endnote
+    
+    :$t("act_016"); <<attn>>
+    note
+$t("note_007")
+    endnote
+
+    :$t("act_017"); <<attn>>
+    note 
+$t("note_008")
+    endnote 
+    
+    :$t("act_018"); <<attn>>
+    note
+$t("note_009")
+    endnote
+    
+    :$t("act_019"); <<attn>>
+    note
+$t("note_010")
+    endnote
+    
+    fork
+      note 
+$t("note_011")
+      endnote
+      :$t("act_020"); <<attn>>
+    fork again
+      note
+$t("note_012")
+      endnote
+      :$t("act_021"); <<attn>>
+    fork again
+      note
+$t("note_013")
+      endnote
+      :$t("act_022"); <<attn>>
+    end fork
+    
+    note 
+$t("note_014")
+    endnote
+    
+    fork again
+      :$t("act_023"); <<attn>>
+  
+    fork again
+      :$t("act_024"); <<attn>>
+    end fork
+  }
+  
+
+  :$t("act_025"); <<attn>>
+  note right
+$t("note_015")
+  endnote
+stop
+legend right
+  |= $t("legend_001") |= $t("legend_002") |
+  |<#D6EAF8>   | $t("legend_003") |
+  |<#FCF3CF>   | $t("legend_004") |
+  |<#AED6F1>   | $t("legend_005") |
+  |<#FAD7A0>   | $t("legend_006") |
+  |<#ABEBC6>   | $t("legend_007") |
+  |<#D7BDE2>   | $t("legend_008") |
+  $t("legend_009")
+endlegend

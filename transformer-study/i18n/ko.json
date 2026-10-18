@@ -138,5 +138,9 @@
   "tr_legend_010": "평가, 체크포인트, 샘플",
   "tr_legend_011": "fork = 병렬로 실행되는 단계.",
   "note_032": "    반복 한 번 = 한 층 = 트랜스포머 블록 하나 (N개 층, 예: Llama 3 8B는 32층).\n    각 층은 자신만의 가중치를 가집니다 (층끼리 공유하지 않음).\n\n    한 층의 가중치 (Llama 3 8B, d_model = 4096): 학습으로 얻고, 생성할 때는 고정입니다.\n\n    |= 위치 |= 가중치 |= 형태 |\n    | 어텐션 앞의 RMSNorm | gamma | 4096 |\n    | 어텐션 (Attention) | W_Q | 4096 x 4096 |\n    |  | W_K | 4096 x 1024 |\n    |  | W_V | 4096 x 1024 |\n    |  | W_O | 4096 x 4096 |\n    | FFN 앞의 RMSNorm | gamma | 4096 |\n    | FFN (SwiGLU) | W_gate | 4096 x 14336 |\n    |  | W_up | 4096 x 14336 |\n    |  | W_down | 14336 x 4096 |\n\n    층당 약 2.18억 파라미터 x 32층 = 70억 (+ embedding과 LM head 10억 = 총 80억).",
-  "note_033": "반복 시작점: 반복은 여기로 돌아옵니다.\n1회차: 입력 = 프롬프트. 이후: 입력 + 직전에 샘플링한 토큰.\nEOS 또는 최대 길이에 도달할 때까지 반복합니다 (판단은 맨 아래)."
+  "note_033": "반복 시작점: 반복은 여기로 돌아옵니다.\n1회차: 입력 = 프롬프트. 이후: 입력 + 직전에 샘플링한 토큰.\nEOS 또는 최대 길이에 도달할 때까지 반복합니다 (판단은 맨 아래).",
+  "act_048": "Multi-Head Attention (자세한 내용: Attention 다이어그램)",
+  "act_049": "SwiGLU FFN (자세한 내용: FFN 다이어그램)",
+  "title_002": "Decoder-only Transformer (Llama 스타일): 한 레이어의 Multi-Head Attention",
+  "title_003": "Decoder-only Transformer (Llama 스타일): 한 레이어의 SwiGLU FFN"
 }

@@ -1,0 +1,120 @@
+@startuml
+' --- i18n:begin (bundle.py replaces this block with inline data; keep the markers) ---
+' ONE source, language chosen at render time (default en):
+'   -DLANG_ZH_TW=1 | -DLANG_JA=1 | -DLANG_KO=1      see render.sh
+' Needs the i18n/ folder next to the working directory (render.sh does that).
+' No i18n folder here (editor, online preview)? Use bundle/<this file>: self-contained.
+' Every visible word lives in i18n/<lang>.json (en.json is the source of truth
+' and the fallback). Never write a raw string below: add a key to the JSON files.
+!$lang = "en"
+!ifdef LANG_ZH_TW
+!$lang = "zh-tw"
+!endif
+!ifdef LANG_JA
+!$lang = "ja"
+!endif
+!ifdef LANG_KO
+!$lang = "ko"
+!endif
+!assert %file_exists("i18n/en.json") : "i18n/en.json not found. PlantUML must run from the transformer-study folder (render.sh does), or use the self-contained bundle/ version of this diagram."
+!$en = %load_json("i18n/en.json")
+!$loc = %load_json("i18n/" + $lang + ".json")
+' --- i18n:end ---
+!function $t($key)
+!if %json_key_exists($loc, $key)
+!return $loc[$key]
+!endif
+!return $en[$key]
+!endfunction
+!theme plain
+skinparam shadowing false
+skinparam defaultFontSize 10
+skinparam ArrowColor #555555
+skinparam ActivityBorderColor #555555
+skinparam ActivityDiamondBorderColor #555555
+skinparam NoteBackgroundColor #FAFAFA
+skinparam NoteBorderColor #B0B0B0
+skinparam NoteFontSize 9
+skinparam PartitionBorderColor #9E9E9E
+skinparam PartitionFontSize 13
+skinparam LegendBackgroundColor #FFFFFF
+skinparam LegendBorderColor #B0B0B0
+skinparam activity {
+  BackgroundColor<<inputs>> #D6EAF8
+  BackgroundColor<<norm>> #FCF3CF
+  BackgroundColor<<attn>> #AED6F1
+  BackgroundColor<<resid>> #FAD7A0
+  BackgroundColor<<ffn>> #ABEBC6
+  BackgroundColor<<head>> #D7BDE2
+}
+skinparam TitleFontStyle plain
+title <b>$t("title_003")</b>\n<size:10><color:#888888>$t("source_001")</color></size>
+footer $t("source_001")
+
+
+start
+  fork
+    !$p_006 = $t("part_006")
+    partition "$p_006" #EAFAF1 {
+      note
+$t("note_018")
+      endnote
+      :$t("act_028"); <<ffn>>
+      note right
+$t("note_019")
+      end note 
+      fork
+          :$t("act_029"); <<ffn>>
+          :$t("act_030"); <<ffn>>
+          note right
+            [12.5, -4.0, 0.2]
+          end note
+          :$t("act_031"); <<ffn>>
+          note right
+$t("note_020")
+          end note
+          :$t("act_032"); <<ffn>>
+          note right
+            [1.0, 0.0, 0.55]
+          end note
+
+      fork again
+          :$t("act_033"); <<ffn>>
+          :$t("act_034"); <<ffn>>
+          note left
+            [ 5.0,  9.0, -2.0]
+          end note
+      end fork
+
+      :$t("act_035"); <<ffn>>
+      note right
+$t("note_021")
+      end note
+
+      :$t("act_036"); <<ffn>>
+      note right
+$t("note_022")
+      end note
+
+    }
+  fork again 
+    :$t("act_037"); <<ffn>>
+  fork again 
+    :$t("act_038"); <<ffn>>
+  end fork
+
+  :$t("act_039"); <<ffn>>
+  note right
+$t("note_023")
+  endnote 
+stop
+legend right
+  |= $t("legend_001") |= $t("legend_002") |
+  |<#D6EAF8>   | $t("legend_003") |
+  |<#FCF3CF>   | $t("legend_004") |
+  |<#AED6F1>   | $t("legend_005") |
+  |<#FAD7A0>   | $t("legend_006") |
+  |<#ABEBC6>   | $t("legend_007") |
+  |<#D7BDE2>   | $t("legend_008") |
+  $t("legend_009")
+endlegend
