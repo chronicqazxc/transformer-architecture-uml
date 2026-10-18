@@ -71,6 +71,17 @@ Both `plantuml_export.puml` and `plantuml_training.puml` are ONE source each. Ev
 6. **Say in the final answer** which keys changed, and flag the translations as drafted by Claude for Wayne's review.
 7. **Structure changes** (new fork, new partition, new loop) use keys for their names and conditions too, and keep the convention that a `fork` means parallel steps.
 
+### Token-efficient editing (do this instead of reading whole files)
+
+Never `Read` a whole `.puml`, `i18n/*.json` or `bundle/*.puml` to change a few words. Use `key.py` (see its docstring):
+
+- Find a key: `python3 key.py find "text"` (add `-a` to search all languages, e.g. for an old number). Don't grep-then-read files.
+- See one key in all 4 languages plus where the `.puml` uses it: `python3 key.py show note_012`. Surrounding diagram lines: `python3 key.py ctx note_012`.
+- Rewrite a value: `python3 key.py set ja note_012 <<'EOF' ... EOF` (real newlines, keeps the file format). Do this for each of the 4 languages, or use Edit on that one line.
+- Structural change in a `.puml`: `grep -n` for the anchor, `Read` with `offset`/`limit` around it, then `Edit` the few lines. Whole-file reads only for a full accuracy review.
+- `bundle/*.puml` is generated and `site/bundle/` is a copy: never read or edit them. Verify with `./site/sync.sh` (cheap) and look at the browser render; `./render.sh` (jar, SVG+PNG for all languages) is only needed for a jar comparison.
+- Keep the final report short: list changed keys, not the new text.
+
 ### Details
 
 - Render all languages: `./render.sh` (outputs `out/<lang>/plantuml_export.svg` and `.png`). Single language by hand, from this folder: `java -DPLANTUML_LIMIT_SIZE=16384 -jar plantuml.jar -DLANG_JA=1 -tsvg plantuml_export.puml` (`-DLANG_ZH_TW=1`, `-DLANG_JA=1`, `-DLANG_KO=1`; none = English). `render.sh` with no argument renders only the generation diagram; use `./render.sh plantuml_export plantuml_training` for both.
