@@ -34,7 +34,7 @@ Goal: keep polishing the diagram until it is **100% accurate and correct**, both
 ## Accuracy Checklist (review against this each pass)
 
 - Shapes: `X` is `[seq_len, d_model]`; per-head `Q/K/V` are `[seq_len, d_head]`; `d_head = d_model / n_heads`; scores are `[seq_len, seq_len]`; `Z` is `[seq_len, d_head]` per head, concatenated to `[seq_len, d_model]` before `W_O`.
-- Scaling factor is `sqrt(d_k)`; the example factor (4.0) should imply `d_k = 16`.
+- Scaling factor is `sqrt(d_k)`; the example uses `d_k = 4` (factor 2.0). The Final Q/K vectors in the RoPE notes must reproduce the raw score grid (`Q x K^T`, checked 2026-10-18), and the RoPE toy rule (dims (0,2) turn 90° per position, dims (1,3) stay) must reproduce Final from Raw. Masked (future) cells are free; unmasked scaled scores feed the softmax and Z numbers.
 - Causal mask is applied to the scaled scores before softmax; masked entries are `-∞`, and each softmax row sums to 1.
 - RoPE rotates Q and K only (never V), per position and per head, after the linear projection.
 - Residual connections add the sublayer's *input* to its output; norm placement (pre-norm vs post-norm) is stated consistently.
@@ -50,7 +50,7 @@ Fixed (2026-10-12, later): norm placement is now pre-norm RMSNorm (pre-attention
 
 Fixed (2026-10-14): checked against the Llama-style mini-LM code (`../wayne-mini-lm/`, commit 8d10441, which matches the diagram on RMSNorm, RoPE, SwiGLU, no biases, final norm, KV cache, untied head). Diagram updated: "SiLU" instead of "SiLU or GELU", FFN width "about 2.7 to 3.5 times", sampling split into Temperature/Top-K on logits, then Softmax, then Top-P and sampling, note that training keeps all positions (loss on every position, targets shifted by one), note that decode computes only the last score row, "N separate vectors" in the W_O note.
 
-Deliberate differences between the diagram and mini-LM (not errors): mini-LM applies the head to all positions and the engine takes the last row (the diagram slices first, which is the efficient order); dropout 0.2 in training only; RoPE uses the rotate-half formula with base 10000; no GQA; `block_size` 128 with cache rebuild; character-level vocab and `d_head` 32 versus the toy example (words, scale 4.0).
+Deliberate differences between the diagram and mini-LM (not errors): mini-LM applies the head to all positions and the engine takes the last row (the diagram slices first, which is the efficient order); dropout 0.2 in training only; RoPE uses the rotate-half formula with base 10000; no GQA; `block_size` 128 with cache rebuild; character-level vocab and `d_head` 32 versus the toy example (words, `d_k` 4, scale 2.0; the toy Value vectors have 3 dims, which a real head would not).
 
 Done (2026-10-14, later): titles say Generation vs Training; generation diagram recolored with a `plain` theme, stereotype colors, colored partitions and a legend; training diagram created (`plantuml_training.puml`); both render without errors.
 

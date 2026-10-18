@@ -118,6 +118,7 @@ endnote
 partition "$p_007" #F5EEF8 {
 note left
 $t("note_027")
+$t("note_042")
 endnote
 :$t("act_043"); <<head>>
 note right

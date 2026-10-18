@@ -76,14 +76,29 @@ $t("note_003")
       partition "$p_004" #EBF5FB {
         fork
           :$t("act_007"); <<attn>>
+          note right
+$t("note_034")
+          endnote
         fork again
           :$t("act_008"); <<attn>>
+          note right
+$t("note_035")
+          endnote
         fork again 
           :$t("act_009"); <<attn>>
+          note right
+$t("note_036")
+          endnote
         fork again 
           :$t("act_010"); <<attn>>
+          note right
+$t("note_037")
+          endnote
         fork again 
           :$t("act_011"); <<attn>>
+          note right
+$t("note_038")
+          endnote
         end fork
         note 
 $t("note_004")
@@ -95,10 +110,19 @@ $t("note_004")
     partition "$p_005" #EBF5FB {
       fork
         :$t("act_012"); <<attn>>
+        note right
+$t("note_039")
+        endnote
       fork again
         :$t("act_013"); <<attn>>
+        note right
+$t("note_040")
+        endnote
       fork again
         :$t("act_014"); <<attn>>
+        note right
+$t("note_041")
+        endnote
       end fork
       
       note
