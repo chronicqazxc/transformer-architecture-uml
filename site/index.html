@@ -89,7 +89,7 @@ async function refresh() {
   status.textContent = 'rendering…';
   try {
     const name = diagSel.value;
-    sources[name] ??= await (await fetch(`bundle/${name}.puml`)).text();
+    sources[name] ??= await (await fetch(`bundle/${name}.puml`, { cache: "no-cache" })).text();
     const toSvg = (src) => new Promise((ok, fail) => renderToString(src.split('\n'), ok, (e) => fail(new Error(String(e)))));
     // The browser build refuses images taller than 4096 px (the jar does not). If a diagram is too
     // tall in some language, retry with smaller note text rather than showing an error.
