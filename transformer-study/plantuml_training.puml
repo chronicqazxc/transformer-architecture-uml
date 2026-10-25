@@ -58,6 +58,9 @@ start
 note right
 $t("tr_note_001")
 end note
+note left
+$t("tr_note_012")
+end note
 
 repeat
   :$t("tr_act_002"); <<opt>>
