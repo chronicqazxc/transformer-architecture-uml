@@ -48,7 +48,7 @@ skinparam activity {
   BackgroundColor<<head>> #D7BDE2
 }
 skinparam TitleFontStyle plain
-title <b>$t("title_001")</b>\n<size:10><color:#888888>$t("source_001")</color></size>
+title <b>$t("title_001")</b>
 footer $t("source_001")
 
 start
@@ -57,14 +57,14 @@ start
 note right
 ["cat", "on", "desk"]
 endnote 
+note left
+$t("note_043")
+endnote
 
 repeat
 :$t("act_047"); <<inputs>>
 note right
 $t("note_033")
-endnote
-note left
-$t("note_043")
 endnote
 :$t("act_002"); <<inputs>>
 
