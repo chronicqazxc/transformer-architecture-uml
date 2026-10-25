@@ -63,6 +63,9 @@ repeat
 note right
 $t("note_033")
 endnote
+note left
+$t("note_043")
+endnote
 :$t("act_002"); <<inputs>>
 
 note right
@@ -79,9 +82,6 @@ while ($c_001) is ($c_002)
   :$t("act_003"); <<norm>>
   note right
 $t("note_002")
-  endnote
-  note left
-$t("note_043")
   endnote
 
   :$t("act_048"); <<attn>>
