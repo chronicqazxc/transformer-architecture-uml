@@ -68,6 +68,9 @@ endnote
 note right
 $t("note_001")
 end note
+note left
+$t("note_032")
+end note
 
 !$c_001 = $t("cond_001")
 !$c_002 = $t("cond_002")
@@ -76,9 +79,6 @@ while ($c_001) is ($c_002)
   :$t("act_003"); <<norm>>
   note right
 $t("note_002")
-  endnote
-  note left
-$t("note_032")
   endnote
 
   :$t("act_048"); <<attn>>
