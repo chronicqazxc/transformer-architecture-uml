@@ -54,6 +54,53 @@ function linkify(svg) {
 }
 import { renderToString } from './vendor/plantuml.js';
 
+// The browser build sizes tables and boxes with canvas measureText, but the SVG text is drawn under the
+// page's lang (ja, zh-Hant, ko), which picks wider Latin glyphs than a canvas without a lang. Text then
+// overflowed its cell by up to ~18%. Chromium: give the measuring canvas the page's lang. Safari has no
+// canvas lang, so there the width is measured on a hidden SVG <text>, which is drawn the way the diagram is.
+{
+  const proto = CanvasRenderingContext2D.prototype;
+  if ('lang' in proto) {
+    const font = Object.getOwnPropertyDescriptor(proto, 'font');
+    Object.defineProperty(proto, 'font', {
+      ...font,
+      set(v) { this.lang = document.documentElement.lang || 'en'; font.set.call(this, v); },
+    });
+  } else {
+    const measure = proto.measureText;
+    const cache = new Map();
+    let probe;
+    proto.measureText = function (text) {
+      const m = measure.call(this, text);
+      const key = `${document.documentElement.lang}|${this.font}|${text}`;
+      let width = cache.get(key);
+      if (width === undefined) {
+        if (!probe) {
+          const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+          svg.style.cssText = 'position:absolute;visibility:hidden;width:0;height:0';
+          probe = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+          probe.style.whiteSpace = 'pre';
+          svg.appendChild(probe);
+          document.body.appendChild(svg);
+        }
+        const [, weight = 'normal', size = '10', family = 'sans-serif'] = /^(?:(bold|italic|oblique)\s+)?(?:\w+\s+)*?([\d.]+)px\s+(.*)$/.exec(this.font) || [];
+        probe.setAttribute('font-size', size);
+        probe.setAttribute('font-family', family);
+        probe.setAttribute('font-weight', weight === 'bold' ? 'bold' : 'normal');
+        probe.setAttribute('font-style', weight === 'italic' || weight === 'oblique' ? weight : 'normal');
+        probe.textContent = text;
+        width = probe.getComputedTextLength();
+        cache.set(key, width);
+      }
+      return {
+        width,
+        actualBoundingBoxAscent: m.actualBoundingBoxAscent, actualBoundingBoxDescent: m.actualBoundingBoxDescent,
+        fontBoundingBoxAscent: m.fontBoundingBoxAscent, fontBoundingBoxDescent: m.fontBoundingBoxDescent,
+      };
+    };
+  }
+}
+
 const $ = (id) => document.getElementById(id);
 const preview = $('preview'), status = $('status'), langSel = $('lang'), diagSel = $('diagram');
 
