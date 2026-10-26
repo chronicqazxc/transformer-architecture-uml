@@ -115,12 +115,21 @@ const IN_REVIEW = { plantuml_training: { en: 'in review', 'zh-tw': '審閱中', 
 const LANGS = ['en', 'zh-tw', 'ja', 'ko'];
 const TITLE = { en: 'Decoder-only Transformer Study', 'zh-tw': 'Decoder-only Transformer 學習', ja: 'Decoder-only Transformer 学習', ko: 'Decoder-only Transformer 학습' };
 
-const HINT = {
-  en: 'Two levels of detail: zoom in (+) from the architecture overview to the full detail; zoom out (−) to go back. "Fit" shows the overview.',
-  'zh-tw': '兩個細節層級：按 (+) 從架構總覽放大到完整細節；按 (−) 縮小則返回。「Fit」顯示總覽。',
-  ja: '2 段階の詳細レベル: (+) でアーキテクチャ概要から完全な詳細へ拡大し、(−) で戻ります。「Fit」で概要を表示します。',
-  ko: '두 단계의 상세 수준: (+)로 아키텍처 개요에서 전체 상세로 확대하고 (−)로 돌아갑니다. "Fit"은 개요를 보여줍니다.',
-};
+// Shown for the level currently on screen: how to reach the other one.
+const HINT = [
+  {   // architecture level -> point to the detail
+    en: 'Zoom in (+) to see the detailed architecture.',
+    'zh-tw': '按 (+) 放大，查看詳細架構。',
+    ja: '(+) で拡大すると、詳細なアーキテクチャが見られます。',
+    ko: '(+)로 확대하면 상세한 아키텍처를 볼 수 있습니다.',
+  },
+  {   // full detail -> point back to the overview
+    en: 'Zoom out (−) to see the high-level architecture.',
+    'zh-tw': '按 (−) 縮小，查看高階架構。',
+    ja: '(−) で縮小すると、高レベルのアーキテクチャが見られます。',
+    ko: '(−)로 축소하면 상위 수준의 아키텍처를 볼 수 있습니다.',
+  },
+];
 
 const store = {
   get(k) { try { return localStorage.getItem(k); } catch { return null; } },
@@ -156,16 +165,22 @@ function fillDiagrams() {
   }).join('');
   diagSel.value = cur;
   $('title').textContent = TITLE[langSel.value];
-  $('hintText').textContent = HINT[langSel.value];
-  $('hint').hidden = store.get('hintClosed3') === '1';
   document.documentElement.lang = langSel.value === 'zh-tw' ? 'zh-Hant' : langSel.value;
 }
 
 // The bundle holds all four languages; its `!$lang = "xx"` line picks one.
 const withLang = (src) => src.replace(/^(!\$lang\s*=\s*)"[\w-]+"/m, `$1"${langSel.value}"`);
 
+// The × only hides the bar for this page view (not stored); a level switch shows the other hint again.
+let hintClosedAt = -1;
+function updateHint() {
+  $('hint').hidden = !isGen() || hintClosedAt === level;
+  if (isGen()) $('hintText').textContent = HINT[level][langSel.value];
+}
+
 async function refresh() {
   const id = ++seq;
+  updateHint();
   status.textContent = 'rendering…';
   try {
     const name = sourceName();
@@ -234,7 +249,7 @@ $('zoomIn').onclick = () => setScale(zoom * 1.2);
 $('zoomOut').onclick = () => setScale(zoom / 1.2);
 $('zoomFit').onclick = () => setScale(1);
 $('fitW').onclick = fitWidth;
-$('hintClose').onclick = () => { $('hint').hidden = true; store.set('hintClosed3', '1'); };
+$('hintClose').onclick = () => { hintClosedAt = level; $('hint').hidden = true; };
 $('svg').onclick = () => {
   if (!lastSvg) return;
   const a = Object.assign(document.createElement('a'), {
