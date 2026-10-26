@@ -1,0 +1,125 @@
+@startuml
+' --- bundled by bundle.py: DO NOT EDIT; edit plantuml_arch.puml and i18n/*.json, then run ./render.sh ---
+' >>> CHANGE THE LANGUAGE HERE: en | zh-tw | ja | ko
+!$lang = "en"
+!$all = {"en":{"source_001":"Source: https://github.com/chronicqazxc/transformer-architecture-uml","act_002":"Embedding","act_003":"RMSNorm (pre-attention)","part_001":"Multi-Head Attention","act_026":"Residual Connection","act_027":"RMSNorm (pre-FFN)","part_006":"Feed-Forward Network","act_041":"Final RMSNorm","act_042":"Slicing","part_007":"LM Head","act_043":"Linear Projection (W_vocab)","act_044":"Temperature and Top-K","act_045":"Softmax","act_046":"Top-P and Sampling Selection","act_050":"Input tokens","act_060":"N x layers (transformer blocks)","title_004":"Decoder-only Transformer (Llama-style): Architecture at a Glance","note_044":"    Compared with the 2017 figure:\n    * no cross-attention (no encoder)\n    * pre-norm: RMSNorm comes BEFORE each sublayer,\n      not \"Add & Norm\" after it\n    * no positional-encoding add at the input:\n      RoPE rotates Q and K inside attention\n    * orange arrows = residual connections:\n      each sublayer's output is added to its own input","note_045":"    Purpose: the text the model reads, as token IDs.\n    Generation: the tokens so far.\n    Training: the text shifted right by one.","note_046":"    Purpose: turn each token ID into a vector\n    the model can compute with.\n    Looks up one row (d_model numbers) of the\n    learned embedding table per token.","note_047":"    Purpose: keep the numbers at a stable scale\n    before each sublayer.\n    Divides each vector by its root-mean-square,\n    then multiplies by a learned weight (gamma).","note_048":"    Purpose: let each token gather information\n    from the tokens before it.\n    Q, K, V projections; RoPE rotates Q and K;\n    scores = Q x K^T; the causal mask hides future\n    tokens; softmax; weighted sum of V; W_O mixes\n    the heads.","note_049":"    Purpose: keep what the layer already knew;\n    the sublayer only adds a correction.\n    x = x + sublayer(norm(x)). In training it also\n    lets gradients flow straight through.","note_050":"    Purpose: process each token on its own\n    (no mixing between tokens); this is where\n    most of the stored knowledge sits.\n    SwiGLU: SiLU(gate) x up, then down to d_model.","note_051":"    Purpose: rescale once more after N layers\n    of additions, before the LM Head.","note_052":"    Purpose: one score (logit) for every word\n    in the vocabulary.\n    Matrix [d_model x vocab_size]. Called \"Linear\" in the\n    2017 figure, the LM Head or unembedding layer here.","note_053":"    Purpose: turn the logits into probabilities\n    that sum to 1.","note_054":"    Purpose: pick the next token.\n    Top-P keeps the smallest set of likely tokens;\n    one is sampled from it.","note_055":"    Purpose: keep only the last position's vector,\n    the one that predicts the next token.\n    While generating; training keeps every position.","note_056":"    Purpose: shape the choice before the probabilities.\n    Temperature rescales the logits (low = safer,\n    high = more varied); Top-K keeps only the K highest.","act_061":"Next token (appended to the input)","note_057":"    Purpose: close the loop.\n    The token is appended to the input and the whole\n    flow repeats from the top, until an EOS token\n    or the max length."},"zh-tw":{"source_001":"原始碼： https://github.com/chronicqazxc/transformer-architecture-uml","act_002":"嵌入 (Embedding)","act_003":"RMSNorm（注意力之前）","part_001":"多頭注意力 (Multi-Head Attention)","part_006":"前饋網路 (Feed-Forward Network)","part_007":"LM Head（輸出層）","act_026":"殘差連接 (Residual Connection)","act_027":"RMSNorm（FFN 之前）","act_041":"最後的 RMSNorm","act_042":"切片 (Slicing)","act_044":"Temperature 與 Top-K","act_046":"Top-P 與抽樣選擇","act_050":"輸入 token","act_060":"N 個 layer (transformer block)","title_004":"Decoder-only Transformer (Llama-style)：架構總覽","note_044":"    與 2017 年原圖的差異：\n    * 沒有 cross-attention (沒有 encoder)\n    * pre-norm：RMSNorm 放在每個子層「之前」，\n      不是子層之後的 \"Add & Norm\"\n    * 輸入端不加 positional encoding：\n      RoPE 在 attention 內旋轉 Q 和 K\n    * 橘色箭頭 = residual 連接：\n      每個子層的輸出都會加上它自己的輸入","note_045":"    用途：模型讀取的文字（token ID）。\n    生成：目前為止的 token。\n    訓練：向右移一位的文字。","note_046":"    用途：把每個 token ID 變成模型能運算的向量。\n    每個 token 從學到的 embedding 表中\n    查出一列（d_model 個數字）。","note_047":"    用途：在每個子層之前，把數值維持在穩定的尺度。\n    把每個向量除以它的均方根，\n    再乘上學到的權重 (gamma)。","note_048":"    用途：讓每個 token 從它之前的 token 收集資訊。\n    Q、K、V 投影；RoPE 旋轉 Q 和 K；\n    分數 = Q x K^T；causal mask 遮住未來的 token；\n    softmax；對 V 加權求和；W_O 混合各個 head。","note_049":"    用途：保留這一層原本已知的內容；\n    子層只加上一個修正量。\n    x = x + sublayer(norm(x))。訓練時也讓\n    梯度能直接穿過。","note_050":"    用途：逐一處理每個 token（token 之間不互相混合）；\n    大部分儲存的知識都在這裡。\n    SwiGLU：SiLU(gate) x up，再經 down 投影回 d_model。","note_051":"    用途：經過 N 層的累加後，\n    在 LM Head 之前再重新縮放一次。","note_052":"    用途：為詞彙表中的每個字產生一個分數 (logit)。\n    矩陣 [d_model x vocab_size]。2017 年原圖稱為 \"Linear\"，\n    在這裡叫 LM Head 或 unembedding 層。","note_053":"    用途：把 logits 轉成總和為 1 的機率。","note_054":"    用途：選出下一個 token。\n    Top-P 只保留最可能的最小 token 集合；\n    再從中抽樣一個。","note_055":"    用途：只保留最後一個位置的向量，\n    也就是用來預測下一個 token 的那個。\n    生成時如此；訓練時保留每個位置。","note_056":"    用途：在算出機率之前先調整選擇。\n    Temperature 縮放 logits（低 = 較保守，\n    高 = 較多樣）；Top-K 只保留最高的 K 個。","act_043":"線性投影 (W_vocab)","act_061":"下一個 token（接到輸入後面）","note_057":"    用途：完成迴圈。\n    這個 token 接到輸入後面，整個流程\n    從頭重複，直到遇到 EOS token\n    或達到最大長度。"},"ja":{"source_001":"ソース: https://github.com/chronicqazxc/transformer-architecture-uml","act_002":"エンベディング (Embedding)","act_003":"RMSNorm (アテンションの前)","part_001":"マルチヘッドアテンション (Multi-Head Attention)","part_006":"フィードフォワードネットワーク (Feed-Forward Network)","part_007":"LM Head (出力層)","act_026":"残差接続 (Residual Connection)","act_027":"RMSNorm (FFN の前)","act_041":"最後の RMSNorm","act_042":"スライス (Slicing)","act_044":"Temperature と Top-K","act_046":"Top-P とサンプリングによる選択","act_050":"入力トークン","act_060":"N 個のレイヤー (transformer block)","title_004":"Decoder-only Transformer (Llama-style): アーキテクチャ概要","note_044":"    2017 年の元の図との違い:\n    * cross-attention なし (encoder がない)\n    * pre-norm: RMSNorm は各サブレイヤーの「前」にあり、\n      後ろの \"Add & Norm\" ではない\n    * 入力に positional encoding を加えない:\n      RoPE が attention 内で Q と K を回転させる\n    * オレンジの矢印 = residual 接続:\n      各サブレイヤーの出力に、その入力を足す","note_045":"    目的: モデルが読むテキスト (トークン ID)。\n    生成: ここまでのトークン。\n    学習: 1 つ右にずらしたテキスト。","note_046":"    目的: 各トークン ID を、モデルが計算できる\n    ベクトルに変える。\n    学習済みの embedding 表から、トークンごとに\n    1 行 (d_model 個の数字) を引く。","note_047":"    目的: 各サブレイヤーの前で、数値のスケールを安定させる。\n    各ベクトルを二乗平均平方根で割り、\n    学習済みの重み (gamma) を掛ける。","note_048":"    目的: 各トークンが、それより前のトークンから情報を集める。\n    Q, K, V の射影; RoPE が Q と K を回転;\n    スコア = Q x K^T; causal mask が未来のトークンを隠す;\n    softmax; V の重み付き和; W_O が各 head を混ぜる。","note_049":"    目的: レイヤーがすでに持つ情報を保ち、\n    サブレイヤーは修正分だけを足す。\n    x = x + sublayer(norm(x))。学習では勾配も\n    そのまま通れる。","note_050":"    目的: 各トークンを個別に処理する\n    (トークン間では混ぜない)。蓄えられた知識の多くはここにある。\n    SwiGLU: SiLU(gate) x up のあと、down で d_model に戻す。","note_051":"    目的: N 個のレイヤーの加算のあと、\n    LM Head の前にもう一度スケールを整える。","note_052":"    目的: 語彙の各単語に 1 つのスコア (logit) を出す。\n    行列 [d_model x vocab_size]。2017 年の図では \"Linear\"、\n    ここでは LM Head またはアンエンベディング層と呼ぶ。","note_053":"    目的: logits を、合計が 1 の確率に変える。","note_054":"    目的: 次のトークンを選ぶ。\n    Top-P は可能性の高い最小のトークン集合だけを残し、\n    そこから 1 つサンプリングする。","note_055":"    目的: 最後の位置のベクトルだけを残す。\n    次のトークンを予測するのはこのベクトル。\n    生成時のみ。学習では全位置を残す。","note_056":"    目的: 確率にする前に選び方を調整する。\n    Temperature は logits を拡縮 (低い = 安全、\n    高い = 多様)。Top-K は上位 K 個だけを残す。","act_043":"線形射影 (W_vocab)","act_061":"次のトークン (入力の末尾に追加)","note_057":"    目的: ループを閉じる。\n    このトークンを入力の末尾に足し、全体の流れを\n    最初から繰り返す。EOS トークンまたは\n    最大長に達するまで。"},"ko":{"source_001":"소스: https://github.com/chronicqazxc/transformer-architecture-uml","act_002":"임베딩 (Embedding)","act_003":"RMSNorm (어텐션 앞)","part_001":"멀티헤드 어텐션 (Multi-Head Attention)","part_006":"피드포워드 네트워크 (Feed-Forward Network)","part_007":"LM Head (출력층)","act_026":"잔차 연결 (Residual Connection)","act_027":"RMSNorm (FFN 앞)","act_041":"마지막 RMSNorm","act_042":"슬라이싱 (Slicing)","act_044":"Temperature와 Top-K","act_046":"Top-P와 샘플링 선택","act_050":"입력 토큰","act_060":"N개의 레이어 (transformer block)","title_004":"Decoder-only Transformer (Llama-style): 아키텍처 한눈에 보기","note_044":"    2017년 원래 그림과의 차이:\n    * cross-attention 없음 (encoder가 없음)\n    * pre-norm: RMSNorm이 각 서브레이어 「앞」에 있고,\n      뒤의 \"Add & Norm\"이 아님\n    * 입력에 positional encoding을 더하지 않음:\n      RoPE가 attention 안에서 Q와 K를 회전\n    * 주황색 화살표 = residual 연결:\n      각 서브레이어의 출력에 자신의 입력을 더함","note_045":"    목적: 모델이 읽는 텍스트 (토큰 ID).\n    생성: 지금까지의 토큰.\n    학습: 한 칸 오른쪽으로 민 텍스트.","note_046":"    목적: 각 토큰 ID를 모델이 계산할 수 있는\n    벡터로 바꿈.\n    학습된 embedding 표에서 토큰마다\n    한 행 (d_model개의 숫자)을 찾아옴.","note_047":"    목적: 각 서브레이어 전에 숫자의 크기를 안정적으로 유지.\n    각 벡터를 제곱평균제곱근으로 나눈 뒤\n    학습된 가중치 (gamma)를 곱함.","note_048":"    목적: 각 토큰이 앞쪽 토큰들에서 정보를 모음.\n    Q, K, V 투영; RoPE가 Q와 K를 회전;\n    점수 = Q x K^T; causal mask가 미래 토큰을 가림;\n    softmax; V의 가중합; W_O가 각 head를 섞음.","note_049":"    목적: 레이어가 이미 알던 것을 유지하고,\n    서브레이어는 보정값만 더함.\n    x = x + sublayer(norm(x)). 학습에서는 기울기도\n    그대로 흐를 수 있음.","note_050":"    목적: 각 토큰을 따로 처리 (토큰끼리 섞지 않음);\n    저장된 지식의 대부분이 여기에 있음.\n    SwiGLU: SiLU(gate) x up 후, down으로 d_model로 되돌림.","note_051":"    목적: N개 레이어의 덧셈 뒤,\n    LM Head 앞에서 한 번 더 크기를 맞춤.","note_052":"    목적: 어휘의 각 단어마다 점수 (logit) 하나를 만듦.\n    행렬 [d_model x vocab_size]. 2017년 그림에서는 \"Linear\",\n    여기서는 LM Head 또는 언임베딩 층이라고 부름.","note_053":"    목적: logits를 합이 1인 확률로 바꿈.","note_054":"    목적: 다음 토큰을 고름.\n    Top-P는 가능성 높은 최소한의 토큰 집합만 남기고,\n    그중 하나를 샘플링함.","note_055":"    목적: 마지막 위치의 벡터만 남김.\n    다음 토큰을 예측하는 것이 이 벡터.\n    생성할 때만; 학습에서는 모든 위치를 유지.","note_056":"    목적: 확률을 구하기 전에 선택을 조정.\n    Temperature는 logits를 조정 (낮음 = 안전,\n    높음 = 다양); Top-K는 상위 K개만 남김.","act_043":"선형 투영 (W_vocab)","act_061":"다음 토큰 (입력 뒤에 추가)","note_057":"    목적: 루프를 닫음.\n    이 토큰을 입력 뒤에 붙이고 전체 흐름을\n    처음부터 반복. EOS 토큰 또는\n    최대 길이에 도달할 때까지."}}
+!$en = $all.en
+!$loc = $all[$lang]
+!function $t($key)
+!if %json_key_exists($loc, $key)
+!return $loc[$key]
+!endif
+!return $en[$key]
+!endfunction
+!theme plain
+skinparam shadowing false
+skinparam defaultFontSize 12
+skinparam ArrowColor #555555
+skinparam RectangleBorderColor #555555
+skinparam NoteBackgroundColor #FAFAFA
+skinparam NoteBorderColor #B0B0B0
+skinparam NoteFontSize 10
+skinparam PackageBorderColor #9E9E9E
+skinparam PackageBackgroundColor #F4FAF4
+skinparam PackageFontSize 13
+skinparam rectangle {
+  BackgroundColor<<inputs>> #D6EAF8
+  BackgroundColor<<norm>> #FCF3CF
+  BackgroundColor<<attn>> #AED6F1
+  BackgroundColor<<ffn>> #ABEBC6
+  BackgroundColor<<head>> #D7BDE2
+  BackgroundColor<<resid>> #FAD7A0
+}
+hide stereotype
+skinparam nodesep 40
+skinparam ranksep 22
+skinparam TitleFontStyle plain
+title <b>$t("title_004")</b>\n<size:10><color:#888888>$t("source_001")</color></size>
+footer $t("source_001")
+
+!$a050 = $t("act_050")
+!$a060 = $t("act_060")
+!$p_007 = $t("part_007")
+!$t_001 = $t("part_001")
+!$t_006 = $t("part_006")
+
+rectangle "$a050" as tok <<inputs>>
+rectangle "$t("act_002")" as emb <<inputs>>
+package "$a060" as layer {
+  rectangle "$t("act_003")" as n1 <<norm>>
+  rectangle "$t_001" as att <<attn>>
+  rectangle "$t("act_026")" as add1 <<resid>>
+  rectangle "$t("act_027")" as n2 <<norm>>
+  rectangle "$t_006" as ffn <<ffn>>
+  rectangle "$t("act_026")" as add2 <<resid>>
+}
+rectangle "$t("act_041")" as nf <<norm>>
+rectangle "$t("act_042")" as sl <<head>>
+package "$p_007" as lmhead {
+  rectangle "$t("act_043")" as lin <<head>>
+  rectangle "$t("act_044")" as tk <<head>>
+  rectangle "$t("act_045")" as sm <<head>>
+  rectangle "$t("act_046")" as tp <<head>>
+}
+rectangle "$t("act_061")" as nt <<inputs>>
+
+tok -down-> emb
+emb -down-> n1
+n1 -down-> att
+att -down-> add1
+add1 -down-> n2
+n2 -down-> ffn
+ffn -down-> add2
+add2 -down-> nf
+nf -down-> sl
+sl -down-> lin
+lin -down-> tk
+tk -down-> sm
+sm -down-> tp
+tp -down-> nt
+emb -[#E67E22,bold]down-> add1
+add1 -[#E67E22,bold]down-> add2
+
+note left of tok
+$t("note_045")
+end note
+note left of emb
+$t("note_046")
+end note
+note left of n1
+$t("note_047")
+end note
+note left of att
+$t("note_048")
+end note
+note left of add1
+$t("note_049")
+end note
+note left of ffn
+$t("note_050")
+end note
+note left of nf
+$t("note_051")
+end note
+note left of sl
+$t("note_055")
+end note
+note left of lin
+$t("note_052")
+end note
+note left of tk
+$t("note_056")
+end note
+note left of sm
+$t("note_053")
+end note
+note left of tp
+$t("note_054")
+end note
+note left of nt
+$t("note_057")
+end note
+note as cmp
+$t("note_044")
+end note
+@enduml

@@ -1,0 +1,140 @@
+@startuml
+' --- i18n:begin (bundle.py replaces this block with inline data; keep the markers) ---
+' ONE source, language chosen at render time (default en):
+'   -DLANG_ZH_TW=1 | -DLANG_JA=1 | -DLANG_KO=1      see render.sh
+' Needs the i18n/ folder next to the working directory (render.sh does that).
+' No i18n folder here (editor, online preview)? Use bundle/<this file>: self-contained.
+' Every visible word lives in i18n/<lang>.json (en.json is the source of truth
+' and the fallback). Never write a raw string below: add a key to the JSON files.
+!$lang = "en"
+!ifdef LANG_ZH_TW
+!$lang = "zh-tw"
+!endif
+!ifdef LANG_JA
+!$lang = "ja"
+!endif
+!ifdef LANG_KO
+!$lang = "ko"
+!endif
+!assert %file_exists("i18n/en.json") : "i18n/en.json not found. PlantUML must run from the transformer-study folder (render.sh does), or use the self-contained bundle/ version of this diagram."
+!$en = %load_json("i18n/en.json")
+!$loc = %load_json("i18n/" + $lang + ".json")
+' --- i18n:end ---
+!function $t($key)
+!if %json_key_exists($loc, $key)
+!return $loc[$key]
+!endif
+!return $en[$key]
+!endfunction
+!theme plain
+skinparam shadowing false
+skinparam defaultFontSize 12
+skinparam ArrowColor #555555
+skinparam RectangleBorderColor #555555
+skinparam NoteBackgroundColor #FAFAFA
+skinparam NoteBorderColor #B0B0B0
+skinparam NoteFontSize 10
+skinparam PackageBorderColor #9E9E9E
+skinparam PackageBackgroundColor #F4FAF4
+skinparam PackageFontSize 13
+skinparam rectangle {
+  BackgroundColor<<inputs>> #D6EAF8
+  BackgroundColor<<norm>> #FCF3CF
+  BackgroundColor<<attn>> #AED6F1
+  BackgroundColor<<ffn>> #ABEBC6
+  BackgroundColor<<head>> #D7BDE2
+  BackgroundColor<<resid>> #FAD7A0
+}
+hide stereotype
+skinparam nodesep 40
+skinparam ranksep 22
+skinparam TitleFontStyle plain
+title <b>$t("title_004")</b>\n<size:10><color:#888888>$t("source_001")</color></size>
+footer $t("source_001")
+
+!$a050 = $t("act_050")
+!$a060 = $t("act_060")
+!$p_007 = $t("part_007")
+!$t_001 = $t("part_001")
+!$t_006 = $t("part_006")
+
+rectangle "$a050" as tok <<inputs>>
+rectangle "$t("act_002")" as emb <<inputs>>
+package "$a060" as layer {
+  rectangle "$t("act_003")" as n1 <<norm>>
+  rectangle "$t_001" as att <<attn>>
+  rectangle "$t("act_026")" as add1 <<resid>>
+  rectangle "$t("act_027")" as n2 <<norm>>
+  rectangle "$t_006" as ffn <<ffn>>
+  rectangle "$t("act_026")" as add2 <<resid>>
+}
+rectangle "$t("act_041")" as nf <<norm>>
+rectangle "$t("act_042")" as sl <<head>>
+package "$p_007" as lmhead {
+  rectangle "$t("act_043")" as lin <<head>>
+  rectangle "$t("act_044")" as tk <<head>>
+  rectangle "$t("act_045")" as sm <<head>>
+  rectangle "$t("act_046")" as tp <<head>>
+}
+rectangle "$t("act_061")" as nt <<inputs>>
+
+tok -down-> emb
+emb -down-> n1
+n1 -down-> att
+att -down-> add1
+add1 -down-> n2
+n2 -down-> ffn
+ffn -down-> add2
+add2 -down-> nf
+nf -down-> sl
+sl -down-> lin
+lin -down-> tk
+tk -down-> sm
+sm -down-> tp
+tp -down-> nt
+emb -[#E67E22,bold]down-> add1
+add1 -[#E67E22,bold]down-> add2
+
+note left of tok
+$t("note_045")
+end note
+note left of emb
+$t("note_046")
+end note
+note left of n1
+$t("note_047")
+end note
+note left of att
+$t("note_048")
+end note
+note left of add1
+$t("note_049")
+end note
+note left of ffn
+$t("note_050")
+end note
+note left of nf
+$t("note_051")
+end note
+note left of sl
+$t("note_055")
+end note
+note left of lin
+$t("note_052")
+end note
+note left of tk
+$t("note_056")
+end note
+note left of sm
+$t("note_053")
+end note
+note left of tp
+$t("note_054")
+end note
+note left of nt
+$t("note_057")
+end note
+note as cmp
+$t("note_044")
+end note
+@enduml
