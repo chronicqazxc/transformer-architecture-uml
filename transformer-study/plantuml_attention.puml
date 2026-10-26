@@ -178,9 +178,6 @@ $t("note_014")
     
     fork again
       :$t("act_023"); <<attn>>
-  
-    fork again
-      :$t("act_024"); <<attn>>
     end fork
   }
   
