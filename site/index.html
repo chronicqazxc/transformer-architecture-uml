@@ -29,7 +29,7 @@
     <option value="en">English</option><option value="zh-tw">繁體中文</option><option value="ja">日本語</option><option value="ko">한국어</option>
   </select>
   <button id="zoomOut" aria-label="Zoom out">−</button><button id="zoomIn" aria-label="Zoom in">+</button><button id="zoomFit">100%</button><button id="fitW" title="Fit to width">Fit</button>
-  <button id="svg">SVG</button>
+  <button id="svg">SVG</button><button id="png">PNG</button>
   <a id="gh" href="https://github.com/chronicqazxc/transformer-architecture-uml" target="_blank" rel="noopener">GitHub</a>
   <span id="status" role="status">loading…</span>
 </header>
@@ -242,6 +242,31 @@ $('svg').onclick = () => {
     download: `${sourceName()}${langSel.value === 'en' ? '' : '.' + langSel.value}.svg`,
   });
   a.click(); URL.revokeObjectURL(a.href);
+};
+// PNG: rasterize the rendered SVG in the browser (2x, white background); nothing leaves the page.
+$('png').onclick = () => {
+  const s = preview.querySelector('svg');
+  if (!lastSvg || !s) return;
+  const w = parseFloat(s.dataset.w), h = parseFloat(s.dataset.h);
+  const scale = Math.min(2, 16000 / Math.max(w, h));   // stay under common canvas size limits
+  const img = new Image();
+  img.onload = () => {
+    const c = document.createElement('canvas');
+    c.width = Math.round(w * scale); c.height = Math.round(h * scale);
+    const ctx = c.getContext('2d');
+    ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, c.width, c.height);
+    ctx.drawImage(img, 0, 0, c.width, c.height);
+    c.toBlob((blob) => {
+      if (!blob) { status.textContent = 'PNG export failed'; return; }
+      const a = Object.assign(document.createElement('a'), {
+        href: URL.createObjectURL(blob),
+        download: `${sourceName()}${langSel.value === 'en' ? '' : '.' + langSel.value}.png`,
+      });
+      a.click(); URL.revokeObjectURL(a.href);
+    }, 'image/png');
+  };
+  img.onerror = () => { status.textContent = 'PNG export failed'; };
+  img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(lastSvg);
 };
 
 fillDiagrams();
