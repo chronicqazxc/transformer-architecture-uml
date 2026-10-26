@@ -109,6 +109,9 @@ const DIAGRAMS = {
   generation:        { en: 'Generation / inference', 'zh-tw': '生成 / 推論', ja: '生成 / 推論', ko: '생성 / 추론' },
   plantuml_training: { en: 'Training', 'zh-tw': '訓練', ja: '学習', ko: '학습' },
 };
+// Diagrams still under review are selectable only when the page runs locally (localhost, 127.0.0.1, file:).
+const DEV = ['localhost', '127.0.0.1', '[::1]', ''].includes(location.hostname);
+const IN_REVIEW = { plantuml_training: { en: 'in review', 'zh-tw': '審閱中', ja: 'レビュー中', ko: '검토 중' } };
 const LANGS = ['en', 'zh-tw', 'ja', 'ko'];
 const TITLE = { en: 'Decoder-only Transformer Study', 'zh-tw': 'Decoder-only Transformer 學習', ja: 'Decoder-only Transformer 学習', ko: 'Decoder-only Transformer 학습' };
 
@@ -128,6 +131,7 @@ const pick = (v, allowed, fallback) => (allowed.includes(v) ? v : fallback);
 
 langSel.value = pick(params.get('lang') ?? store.get('lang'), LANGS, 'en');
 const names = Object.keys(DIAGRAMS);
+const selectable = names.filter((n) => DEV || !IN_REVIEW[n]);
 // Semantic zoom: the two generation diagrams are levels of detail of ONE scale. The % shown is
 // that scale, measured on the full-detail diagram (100% = its natural size, FULL_W px wide):
 //   below the full diagram's fit-to-width scale -> architecture, from there up -> full detail.
@@ -145,8 +149,11 @@ let zoom = 1, seq = 0, lastSvg = '', fitNext = true;
 const sources = {};
 
 function fillDiagrams() {
-  const cur = diagSel.value || pick(params.get('d'), names, 'generation');
-  diagSel.innerHTML = names.map((n) => `<option value="${n}">${DIAGRAMS[n][langSel.value]}</option>`).join('');
+  const cur = diagSel.value || pick(params.get('d'), selectable, 'generation');
+  diagSel.innerHTML = names.map((n) => {
+    const off = !selectable.includes(n);
+    return `<option value="${n}"${off ? ' disabled' : ''}>${DIAGRAMS[n][langSel.value]}${off ? ` (${IN_REVIEW[n][langSel.value]})` : ''}</option>`;
+  }).join('');
   diagSel.value = cur;
   $('title').textContent = TITLE[langSel.value];
   $('hintText').textContent = HINT[langSel.value];
