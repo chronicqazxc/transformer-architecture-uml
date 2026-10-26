@@ -75,7 +75,7 @@ $t("note_020")
           end note
           :$t("act_032"); <<ffn>>
           note right
-            [1.0, 0.0, 0.55]
+            [12.5, -0.072, 0.110]
           end note
 
       fork again
