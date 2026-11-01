@@ -118,13 +118,12 @@ endnote
 
 !$p_007 = $t("part_007")
 partition "$p_007" #F5EEF8 {
+:$t("act_043"); <<head>>
 note left
 $t("note_027")
-$t("note_042")
 endnote
-:$t("act_043"); <<head>>
 note right
-$t("note_028")
+$t("note_042")
 endnote
 
 :$t("act_044"); <<head>>
@@ -133,6 +132,9 @@ $t("note_029")
 endnote
 
 :$t("act_045"); <<head>>
+note right
+$t("note_058")
+endnote
 :$t("act_046"); <<head>>
 note right
 $t("note_030")
