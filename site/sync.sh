@@ -5,3 +5,5 @@ cd "$(dirname "$0")" || exit 1
 python3 -I ../transformer-study/check_i18n.py >/dev/null || exit 1
 python3 -I ../transformer-study/bundle.py || exit 1
 mkdir -p bundle && cp ../transformer-study/bundle/*.puml bundle/ && echo "site/bundle updated"
+# Build time shown as "Updated" in the viewer (git-ignored: stamped on every build, so the deploy sets it).
+date -u +'{"updated": "%Y-%m-%dT%H:%M:%SZ"}' > version.json && echo "site/version.json stamped"

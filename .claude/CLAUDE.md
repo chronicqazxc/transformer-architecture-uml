@@ -48,6 +48,7 @@ Implementation rules:
 - Diagram content changes follow `transformer-study/.claude/CLAUDE.md` (keys in `i18n/*.json`, all four languages, run `./render.sh`, commit regenerated `bundle/`).
 - Keep every `.claude/CLAUDE.md` under 200 lines. When one grows past that, move a self-contained topic (for example Known Issues, Rendering, the live-editor notes) into `.claude/rules/<topic>.md` in the same folder.
 - Never publish anything that sends diagram text to an external service; the browser build renders locally.
+- Change log in the viewer: `site/changelog.json` (newest first, `date` plus a bullet list in all four languages, written for readers, not commit messages). After any change a reader would notice (diagram content, wording, viewer features), add or extend the entry for that day in the same commit. The "Updated" time in the header comes from `site/version.json`, which `sync.sh` stamps at build time (so the Pages deploy sets it); it is git-ignored, and without it the header falls back to the newest changelog date.
 - Ask before pushing or changing anything outward-facing (repo settings, workflow triggers). Commits end with the `Co-Authored-By` line from the session attribution.
 
 ## Repo and deployment

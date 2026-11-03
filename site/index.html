@@ -16,6 +16,17 @@
   #hint { display: flex; gap: 12px; align-items: center; padding: 6px 16px; background: #fef3c7; color: #78350f; font-size: 13px; }
   #hint[hidden] { display: none; }
   #hint button { margin-left: auto; padding: 0 8px; background: transparent; color: inherit; border-color: #d97706; }
+  #updated { font-size: 12px; opacity: .8; }
+  #changes[hidden] { display: none; }
+  dialog { width: min(640px, calc(100% - 32px)); max-height: 80vh; padding: 0; border: 1px solid #d1d5db; border-radius: 8px; color: #111827; background: #fff; }
+  dialog::backdrop { background: rgba(17, 24, 39, .45); }
+  dialog header { justify-content: space-between; background: #f3f4f6; color: #111827; }
+  dialog header h2 { font-size: 15px; margin: 0; }
+  dialog header button { background: transparent; color: inherit; border-color: #9ca3af; }
+  #changesBody { padding: 4px 20px 16px; overflow: auto; max-height: calc(80vh - 52px); }
+  #changesBody h3 { font-size: 13px; margin: 16px 0 4px; color: #4b5563; }
+  #changesBody ul { margin: 0; padding-left: 20px; }
+  #changesBody li { margin: 3px 0; line-height: 1.45; }
   #preview { flex: 1; overflow: auto; padding: 16px; }
   #preview svg { display: block; margin: 0 auto; }
   #error { color: #b91c1c; white-space: pre-wrap; }
@@ -31,10 +42,15 @@
   <button id="zoomOut" aria-label="Zoom out">−</button><button id="zoomIn" aria-label="Zoom in">+</button><button id="zoomFit">100%</button><button id="fitW" title="Fit to width">Fit</button>
   <button id="svg">SVG</button><button id="png">PNG</button>
   <a id="gh" href="https://github.com/chronicqazxc/transformer-architecture-uml" target="_blank" rel="noopener">GitHub</a>
+  <button id="changes" hidden></button><span id="updated"></span>
   <span id="status" role="status">loading…</span>
 </header>
 <div id="hint" hidden><span id="hintText"></span><button id="hintClose" aria-label="Dismiss">×</button></div>
 <div id="preview"></div>
+<dialog id="changesDlg" aria-labelledby="changesTitle">
+  <header><h2 id="changesTitle"></h2><form method="dialog"><button id="changesClose"></button></form></header>
+  <div id="changesBody"></div>
+</dialog>
 
 <script src="vendor/viz-global.js"></script>
 <script type="module">
@@ -131,6 +147,16 @@ const HINT = [
   },
 ];
 
+// "Updated" comes from version.json (stamped by sync.sh when the site is built); the change log is the
+// hand-written changelog.json. Both are optional: without them the header simply shows less.
+const LABELS = {
+  en: { updated: 'Updated', changes: 'Change log', close: 'Close' },
+  'zh-tw': { updated: '更新於', changes: '更新記錄', close: '關閉' },
+  ja: { updated: '更新', changes: '更新履歴', close: '閉じる' },
+  ko: { updated: '업데이트', changes: '변경 내역', close: '닫기' },
+};
+let updatedISO = null, changelog = [];
+
 const store = {
   get(k) { try { return localStorage.getItem(k); } catch { return null; } },
   set(k, v) { try { localStorage.setItem(k, v); } catch {} },
@@ -165,6 +191,7 @@ function fillDiagrams() {
   }).join('');
   diagSel.value = cur;
   $('title').textContent = TITLE[langSel.value];
+  renderMeta();
   document.documentElement.lang = langSel.value === 'zh-tw' ? 'zh-Hant' : langSel.value;
 }
 
@@ -176,6 +203,46 @@ let hintClosedAt = -1;
 function updateHint() {
   $('hint').hidden = !isGen() || hintClosedAt === level;
   if (isGen()) $('hintText').textContent = HINT[level][langSel.value];
+}
+
+function renderMeta() {
+  const L = LABELS[langSel.value];
+  $('changes').textContent = L.changes;
+  $('changes').hidden = !changelog.length;
+  $('changesClose').textContent = L.close;
+  let when = '', title = '';
+  try {
+    if (updatedISO) {
+      const d = new Date(updatedISO);
+      when = d.toLocaleString(langSel.value, { dateStyle: 'medium', timeStyle: 'short' });
+      title = updatedISO;
+    } else if (changelog.length) {
+      when = new Date(changelog[0].date + 'T00:00:00').toLocaleDateString(langSel.value, { dateStyle: 'medium' });
+      title = changelog[0].date;
+    }
+  } catch {}
+  $('updated').textContent = when ? `${L.updated}: ${when}` : '';
+  $('updated').title = title;
+}
+async function loadMeta() {
+  const get = async (f) => { try { const r = await fetch(f, { cache: 'no-cache' }); return r.ok ? await r.json() : null; } catch { return null; } };
+  const [v, c] = await Promise.all([get('version.json'), get('changelog.json')]);
+  updatedISO = v && v.updated || null;
+  changelog = Array.isArray(c) ? c : [];
+  renderMeta();
+}
+function openChanges() {
+  const lang = langSel.value, L = LABELS[lang];
+  $('changesTitle').textContent = L.changes;
+  const body = $('changesBody'); body.textContent = '';
+  for (const e of changelog) {
+    const h = document.createElement('h3');
+    try { h.textContent = new Date(e.date + 'T00:00:00').toLocaleDateString(lang, { dateStyle: 'long' }); } catch { h.textContent = e.date; }
+    const ul = document.createElement('ul');
+    for (const t of e[lang] || e.en || []) { const li = document.createElement('li'); li.textContent = t; ul.appendChild(li); }
+    body.append(h, ul);
+  }
+  $('changesDlg').showModal();
 }
 
 async function refresh() {
@@ -284,8 +351,10 @@ $('png').onclick = () => {
   img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(lastSvg);
 };
 
+$('changes').onclick = openChanges;
 fillDiagrams();
 refresh();
+loadMeta();
 </script>
 </body>
 </html>

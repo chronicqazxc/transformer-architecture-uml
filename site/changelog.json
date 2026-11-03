@@ -1,0 +1,101 @@
+[
+ {
+  "date": "2026-11-03",
+  "en": [
+   "The header shows when the site was last updated, and this change log."
+  ],
+  "zh-tw": [
+   "標題列顯示網站最後更新時間，並新增這份更新記錄。"
+  ],
+  "ja": [
+   "ヘッダーにサイトの最終更新時刻を表示し、この更新履歴を追加。"
+  ],
+  "ko": [
+   "헤더에 사이트의 마지막 업데이트 시각을 표시하고, 이 변경 내역을 추가."
+  ]
+ },
+ {
+  "date": "2026-11-01",
+  "en": [
+   "Notes rewritten in plain language, with before/after lines for RMSNorm, attention, residual and FFN.",
+   "Worked toy tables for the output stage: W_vocab, Temperature, Softmax, Top-P (renormalize, T = 0, seed).",
+   "One term per concept: layer = transformer block; \"LM Head and Sampling\"."
+  ],
+  "zh-tw": [
+   "註解改寫成白話，RMSNorm、attention、residual、FFN 都加上「之前／之後」。",
+   "輸出階段加入 toy 數字表格：W_vocab、Temperature、Softmax、Top-P（重新正規化、T = 0、seed）。",
+   "一個概念用一個詞：layer = transformer block；「LM Head 與抽樣」。"
+  ],
+  "ja": [
+   "注釈を平易な言葉に書き直し、RMSNorm・attention・residual・FFN に「前／後」を追加。",
+   "出力段階に toy の数値表を追加: W_vocab、Temperature、Softmax、Top-P (再正規化、T = 0、seed)。",
+   "1 つの概念に 1 つの用語: layer = transformer block、「LM Head とサンプリング」。"
+  ],
+  "ko": [
+   "주석을 쉬운 말로 다시 쓰고 RMSNorm, attention, residual, FFN에 '전/후'를 추가.",
+   "출력 단계에 toy 숫자 표 추가: W_vocab, Temperature, Softmax, Top-P (재정규화, T = 0, seed).",
+   "개념 하나에 용어 하나: layer = transformer block, 'LM Head와 샘플링'."
+  ]
+ },
+ {
+  "date": "2026-10-26",
+  "en": [
+   "New architecture-at-a-glance level; zoom in for the full detail.",
+   "PNG download next to SVG.",
+   "Attention and FFN toy numbers made consistent (2 heads, real SiLU).",
+   "Fixed text overflow in Traditional Chinese, Japanese and Korean."
+  ],
+  "zh-tw": [
+   "新增「架構總覽」層級，放大可看完整細節。",
+   "SVG 旁新增 PNG 下載。",
+   "Attention 與 FFN 的 toy 數字改為一致（2 個 head、真正的 SiLU）。",
+   "修正繁體中文、日文、韓文的文字溢出。"
+  ],
+  "ja": [
+   "「アーキテクチャ概要」レベルを追加。拡大すると詳細が見られます。",
+   "SVG の隣に PNG ダウンロードを追加。",
+   "attention と FFN の toy 数値を整合 (2 head、本物の SiLU)。",
+   "繁体字中国語・日本語・韓国語の文字のはみ出しを修正。"
+  ],
+  "ko": [
+   "'아키텍처 한눈에 보기' 레벨 추가. 확대하면 전체 상세가 보입니다.",
+   "SVG 옆에 PNG 다운로드 추가.",
+   "attention과 FFN의 toy 숫자를 일치시킴 (head 2개, 실제 SiLU).",
+   "중국어(번체)·일본어·한국어 글자 넘침 수정."
+  ]
+ },
+ {
+  "date": "2026-10-25",
+  "en": [
+   "Worked examples for logits, Top-K, Softmax and Top-P.",
+   "Llama-style explanation note (what it is, how it differs from the 2017 Transformer)."
+  ],
+  "zh-tw": [
+   "加入 logits、Top-K、Softmax、Top-P 的實例。",
+   "加入 Llama-style 說明（它是什麼、與 2017 年 Transformer 的差異）。"
+  ],
+  "ja": [
+   "logits、Top-K、Softmax、Top-P の具体例を追加。",
+   "Llama-style の説明を追加 (何か、2017 年の Transformer との違い)。"
+  ],
+  "ko": [
+   "logits, Top-K, Softmax, Top-P 예시 추가.",
+   "Llama-style 설명 추가 (무엇인지, 2017년 Transformer와의 차이)."
+  ]
+ },
+ {
+  "date": "2026-10-17",
+  "en": [
+   "First version published: generation and training diagrams in four languages, drawn in the browser."
+  ],
+  "zh-tw": [
+   "首次發布：生成與訓練圖，四種語言，在瀏覽器中直接繪製。"
+  ],
+  "ja": [
+   "初公開: 生成と学習の図を 4 言語で、ブラウザ内で描画。"
+  ],
+  "ko": [
+   "첫 공개: 생성과 학습 다이어그램을 4개 언어로, 브라우저에서 바로 렌더링."
+  ]
+ }
+]
