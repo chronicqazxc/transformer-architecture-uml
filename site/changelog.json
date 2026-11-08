@@ -15,7 +15,10 @@
    "The high-level Multi-Head Attention note ends with a before / after comparison of the vector of \"on\".",
    "The detailed Residual Connection note now shows that both sides must have the same shape (3 rows, 4 columns), and that W_O brings the attention output back to d_model = 4.",
    "The high-level Residual Connection note now has a worked example for \"on\": block input + attention output = [1.74, -2.60, -0.83, 1.78], and says both sides must have the same shape.",
-   "In the high-level view, the \"Orange arrows = residual connections\" note sits to the right of the Embedding box but has no line to it, so it is not mistaken for a note about Embedding."
+   "In the high-level view, the \"Orange arrows = residual connections\" note sits to the right of the Embedding box but has no line to it, so it is not mistaken for a note about Embedding.",
+   "The high-level Feed-Forward Network note now has worked examples for all four steps for \"on\" (Gate and Up, SiLU, multiply, Down), with the assumed toy matrices listed in one place. The result is added back by the second Residual.",
+   "The high-level glossary now lists d_ffn (the FFN hidden size), W_gate and W_up, W_down, and SiLU (a fixed formula with nothing to learn).",
+   "New high-level note \"Where do W_gate, W_up, W_down come from?\" on the Feed-Forward Network (same story as for W_Q, W_K, W_V, W_O: chosen size, random start, training, frozen)."
   ],
   "zh-tw": [
    "高階圖的詞彙表新增 W_O（把並排接起來的各 head 混合成注意力輸出的矩陣）：d_model 列、d_model 欄，每個區塊一個。",
@@ -31,7 +34,10 @@
    "高階圖 Multi-Head Attention 的說明最後加上 \"on\" 向量在注意力之前與之後的對照。",
    "詳細圖的 Residual Connection 說明現在標明兩邊的形狀必須相同（各 3 列、4 欄），W_O 會把注意力輸出變回 d_model = 4。",
    "高階圖的 Residual Connection 說明現在有 \"on\" 的算式範例：區塊輸入 + 注意力輸出 = [1.74, -2.60, -0.83, 1.78]，並說明兩邊的形狀必須相同。",
-   "高階圖中，「橘色箭頭 = residual 連接」的說明放在 Embedding 方塊右側，但不再連線到它，避免被誤認為是 Embedding 的說明。"
+   "高階圖中，「橘色箭頭 = residual 連接」的說明放在 Embedding 方塊右側，但不再連線到它，避免被誤認為是 Embedding 的說明。",
+   "高階圖 Feed-Forward Network 的說明，四個步驟（Gate 與 Up、SiLU、相乘、Down）現在都有 \"on\" 的算式範例，假設的 toy 矩陣集中列在一處。結果會由第二個 Residual 加回去。",
+   "高階圖的詞彙表新增 d_ffn（FFN 的隱藏寬度）、W_gate 與 W_up、W_down，以及 SiLU（固定公式，沒有東西要學）。",
+   "高階圖在 Feed-Forward Network 上新增說明「W_gate、W_up、W_down 是從哪裡來的？」（與 W_Q、W_K、W_V、W_O 相同的過程：決定尺寸、隨機開始、訓練、固定）。"
   ],
   "ja": [
    "高レベル図の用語集に W_O (横に並べた head を混ぜてアテンションの出力にする行列) を追加: d_model 行、d_model 列、ブロックごとに 1 つ。",
@@ -47,7 +53,10 @@
    "高レベル図の Multi-Head Attention の説明の最後に、\"on\" のベクトルのアテンション前後の比較を追加。",
    "詳細図の Residual Connection のメモに、両方の形が同じでなければならないこと (どちらも 3 行 4 列) と、W_O がアテンション出力を d_model = 4 に戻すことを追記しました。",
    "高階図の Residual Connection のメモに \"on\" の計算例を追加: ブロック入力 + アテンション出力 = [1.74, -2.60, -0.83, 1.78]。両方の形が同じでなければならないことも記載。",
-   "高階図で、「オレンジの矢印 = residual 接続」のメモは Embedding ボックスの右に置かれ、線ではつながなくなりました (Embedding の説明と誤解されないため)。"
+   "高階図で、「オレンジの矢印 = residual 接続」のメモは Embedding ボックスの右に置かれ、線ではつながなくなりました (Embedding の説明と誤解されないため)。",
+   "高階図の Feed-Forward Network のメモに、\"on\" についての 4 ステップ (Gate と Up、SiLU、掛け算、Down) すべての計算例を追加し、仮定した toy 行列を 1 か所にまとめました。結果は 2 つ目の Residual で足し戻されます。",
+   "高階図の用語集に d_ffn (FFN の隠れ層の幅)、W_gate と W_up、W_down、SiLU (固定の式で学習するものはない) を追加しました。",
+   "高階図の Feed-Forward Network に「W_gate、W_up、W_down はどこから来るのか?」のメモを追加しました (W_Q、W_K、W_V、W_O と同じ流れ: サイズを決める、ランダムで始める、学習する、固定する)。"
   ],
   "ko": [
    "상위 수준 그림의 용어집에 W_O (나란히 이은 head를 섞어 어텐션 출력을 만드는 행렬)를 추가: d_model 행, d_model 열, 블록당 하나.",
@@ -63,7 +72,10 @@
    "상위 수준 그림의 Multi-Head Attention 설명 끝에 \"on\" 벡터의 어텐션 전후 비교를 추가.",
    "상세 다이어그램의 Residual Connection 설명에 두 쪽의 모양이 같아야 한다는 점(각각 3행 4열)과 W_O가 어텐션 출력을 d_model = 4로 되돌린다는 점을 추가했습니다.",
    "상위 수준 다이어그램의 Residual Connection 설명에 \"on\"의 계산 예시를 추가했습니다: 블록 입력 + 어텐션 출력 = [1.74, -2.60, -0.83, 1.78]. 두 쪽의 모양이 같아야 한다는 설명도 포함됩니다.",
-   "상위 수준 다이어그램에서 \"주황색 화살표 = residual 연결\" 설명은 Embedding 상자 오른쪽에 놓이되 선으로 연결되지 않아, Embedding에 대한 설명으로 오해되지 않습니다."
+   "상위 수준 다이어그램에서 \"주황색 화살표 = residual 연결\" 설명은 Embedding 상자 오른쪽에 놓이되 선으로 연결되지 않아, Embedding에 대한 설명으로 오해되지 않습니다.",
+   "상위 수준 다이어그램의 Feed-Forward Network 설명에 \"on\"에 대한 네 단계(Gate와 Up, SiLU, 곱셈, Down) 모두의 계산 예시를 추가하고, 가정한 toy 행렬을 한곳에 모았습니다. 결과는 두 번째 Residual이 다시 더합니다.",
+   "상위 수준 다이어그램의 용어집에 d_ffn(FFN의 은닉 크기), W_gate와 W_up, W_down, SiLU(학습할 것이 없는 고정 공식)를 추가했습니다.",
+   "상위 수준 다이어그램의 Feed-Forward Network에 \"W_gate, W_up, W_down은 어디서 오는가?\" 설명을 추가했습니다 (W_Q, W_K, W_V, W_O와 같은 흐름: 크기 정하기, 무작위로 시작, 학습, 고정)."
   ]
  },
  {

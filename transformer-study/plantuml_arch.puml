@@ -119,6 +119,9 @@ end note
 note left of ffn
 $t("note_050")
 end note
+note right of ffn
+$t("note_063")
+end note
 note left of nf
 $t("note_051")
 end note
