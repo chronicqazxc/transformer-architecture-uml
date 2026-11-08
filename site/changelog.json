@@ -18,7 +18,10 @@
    "In the high-level view, the \"Orange arrows = residual connections\" note sits to the right of the Embedding box but has no line to it, so it is not mistaken for a note about Embedding.",
    "The high-level Feed-Forward Network note now has worked examples for all four steps for \"on\" (Gate and Up, SiLU, multiply, Down), with the assumed toy matrices listed in one place. The result is added back by the second Residual.",
    "The high-level glossary now lists d_ffn (the FFN hidden size), W_gate and W_up, W_down, and SiLU (a fixed formula with nothing to learn).",
-   "New high-level note \"Where do W_gate, W_up, W_down come from?\" on the Feed-Forward Network (same story as for W_Q, W_K, W_V, W_O: chosen size, random start, training, frozen)."
+   "New high-level note \"Where do W_gate, W_up, W_down come from?\" on the Feed-Forward Network (same story as for W_Q, W_K, W_V, W_O: chosen size, random start, training, frozen).",
+   "The high-level Feed-Forward Network note now explains SwiGLU in plain words: an FFN with a gate, where each number in the gate vector is multiplied with the number at the same position in the up vector (above 1 makes it bigger, between 0 and 1 smaller, near 0 switches it off, negative flips the sign).",
+   "The high-level Feed-Forward Network note now has a small flow picture: token vector, two branches (gate with SiLU, and up), multiply, W_down, output.",
+   "The high-level Feed-Forward Network note now says what the up and gate vectors are for: up is the content (what the model learned, as a weighted sum of the token vector), gate is the filter."
   ],
   "zh-tw": [
    "高階圖的詞彙表新增 W_O（把並排接起來的各 head 混合成注意力輸出的矩陣）：d_model 列、d_model 欄，每個區塊一個。",
@@ -37,7 +40,10 @@
    "高階圖中，「橘色箭頭 = residual 連接」的說明放在 Embedding 方塊右側，但不再連線到它，避免被誤認為是 Embedding 的說明。",
    "高階圖 Feed-Forward Network 的說明，四個步驟（Gate 與 Up、SiLU、相乘、Down）現在都有 \"on\" 的算式範例，假設的 toy 矩陣集中列在一處。結果會由第二個 Residual 加回去。",
    "高階圖的詞彙表新增 d_ffn（FFN 的隱藏寬度）、W_gate 與 W_up、W_down，以及 SiLU（固定公式，沒有東西要學）。",
-   "高階圖在 Feed-Forward Network 上新增說明「W_gate、W_up、W_down 是從哪裡來的？」（與 W_Q、W_K、W_V、W_O 相同的過程：決定尺寸、隨機開始、訓練、固定）。"
+   "高階圖在 Feed-Forward Network 上新增說明「W_gate、W_up、W_down 是從哪裡來的？」（與 W_Q、W_K、W_V、W_O 相同的過程：決定尺寸、隨機開始、訓練、固定）。",
+   "高階圖 Feed-Forward Network 的說明現在用白話解釋 SwiGLU：有閘門的 FFN，gate 向量中的每個數字會和 up 向量中同一位置的數字相乘（大於 1 變大、在 0 和 1 之間變小、接近 0 就關掉、負數則正負號反轉）。",
+   "高階圖 Feed-Forward Network 的說明新增一張小流程圖：token 向量、兩條分支（gate 加 SiLU，以及 up）、相乘、W_down、輸出。",
+   "高階圖 Feed-Forward Network 的說明現在說明 up 和 gate 向量的用途：up 是內容（模型學到的東西，以 token 向量的加權總和表示），gate 是過濾器。"
   ],
   "ja": [
    "高レベル図の用語集に W_O (横に並べた head を混ぜてアテンションの出力にする行列) を追加: d_model 行、d_model 列、ブロックごとに 1 つ。",
@@ -56,7 +62,10 @@
    "高階図で、「オレンジの矢印 = residual 接続」のメモは Embedding ボックスの右に置かれ、線ではつながなくなりました (Embedding の説明と誤解されないため)。",
    "高階図の Feed-Forward Network のメモに、\"on\" についての 4 ステップ (Gate と Up、SiLU、掛け算、Down) すべての計算例を追加し、仮定した toy 行列を 1 か所にまとめました。結果は 2 つ目の Residual で足し戻されます。",
    "高階図の用語集に d_ffn (FFN の隠れ層の幅)、W_gate と W_up、W_down、SiLU (固定の式で学習するものはない) を追加しました。",
-   "高階図の Feed-Forward Network に「W_gate、W_up、W_down はどこから来るのか?」のメモを追加しました (W_Q、W_K、W_V、W_O と同じ流れ: サイズを決める、ランダムで始める、学習する、固定する)。"
+   "高階図の Feed-Forward Network に「W_gate、W_up、W_down はどこから来るのか?」のメモを追加しました (W_Q、W_K、W_V、W_O と同じ流れ: サイズを決める、ランダムで始める、学習する、固定する)。",
+   "高階図の Feed-Forward Network のメモで SwiGLU を平易に説明しました: ゲート付きの FFN で、gate ベクトルの各数字が up ベクトルの同じ位置の数字に掛けられます (1 より大きいと大きく、0 と 1 の間だと小さく、0 に近いとオフ、負だと符号が反転)。",
+   "高階図の Feed-Forward Network のメモに小さな流れ図を追加しました: トークンのベクトル、2 つの枝 (SiLU をかける gate と up)、掛け算、W_down、出力。",
+   "高階図の Feed-Forward Network のメモに、up と gate のベクトルの役割を追記しました: up は中身 (モデルが学んだこと。トークンのベクトルの重み付き和)、gate はフィルターです。"
   ],
   "ko": [
    "상위 수준 그림의 용어집에 W_O (나란히 이은 head를 섞어 어텐션 출력을 만드는 행렬)를 추가: d_model 행, d_model 열, 블록당 하나.",
@@ -75,7 +84,10 @@
    "상위 수준 다이어그램에서 \"주황색 화살표 = residual 연결\" 설명은 Embedding 상자 오른쪽에 놓이되 선으로 연결되지 않아, Embedding에 대한 설명으로 오해되지 않습니다.",
    "상위 수준 다이어그램의 Feed-Forward Network 설명에 \"on\"에 대한 네 단계(Gate와 Up, SiLU, 곱셈, Down) 모두의 계산 예시를 추가하고, 가정한 toy 행렬을 한곳에 모았습니다. 결과는 두 번째 Residual이 다시 더합니다.",
    "상위 수준 다이어그램의 용어집에 d_ffn(FFN의 은닉 크기), W_gate와 W_up, W_down, SiLU(학습할 것이 없는 고정 공식)를 추가했습니다.",
-   "상위 수준 다이어그램의 Feed-Forward Network에 \"W_gate, W_up, W_down은 어디서 오는가?\" 설명을 추가했습니다 (W_Q, W_K, W_V, W_O와 같은 흐름: 크기 정하기, 무작위로 시작, 학습, 고정)."
+   "상위 수준 다이어그램의 Feed-Forward Network에 \"W_gate, W_up, W_down은 어디서 오는가?\" 설명을 추가했습니다 (W_Q, W_K, W_V, W_O와 같은 흐름: 크기 정하기, 무작위로 시작, 학습, 고정).",
+   "상위 수준 다이어그램의 Feed-Forward Network 설명에서 SwiGLU를 쉬운 말로 설명했습니다: 게이트가 있는 FFN이며, gate 벡터의 각 숫자가 up 벡터의 같은 위치의 숫자와 곱해집니다 (1보다 크면 커지고, 0과 1 사이면 작아지고, 0에 가까우면 꺼지고, 음수면 부호가 뒤집힘).",
+   "상위 수준 다이어그램의 Feed-Forward Network 설명에 작은 흐름도를 추가했습니다: 토큰 벡터, 두 갈래(SiLU를 적용하는 gate와 up), 곱셈, W_down, 출력.",
+   "상위 수준 다이어그램의 Feed-Forward Network 설명에 up과 gate 벡터의 역할을 추가했습니다: up은 내용(모델이 학습한 것, 토큰 벡터의 가중합), gate는 필터입니다."
   ]
  },
  {
