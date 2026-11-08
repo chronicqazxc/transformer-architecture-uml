@@ -104,8 +104,14 @@ end note
 note left of n1
 $t("note_047")
 end note
+note right of n1
+$t("note_062")
+end note
 note left of att
 $t("note_048")
+end note
+note right of att
+$t("note_061")
 end note
 note left of add1
 $t("note_049")
@@ -136,5 +142,11 @@ $t("note_057")
 end note
 note as cmp
 $t("note_044")
+end note
+note as glossary
+$t("note_060")
+end note
+note as r059
+$t("note_059")
 end note
 @enduml

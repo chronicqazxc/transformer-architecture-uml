@@ -56,6 +56,8 @@ start
   !$p_001 = $t("part_001")
   partition "$p_001" #EBF5FB {
   fork
+    !$p_008 = $t("part_008")
+    partition "$p_008" #EBF5FB {
     !$p_002 = $t("part_002")
     partition "$p_002" #EBF5FB {
       !$p_003 = $t("part_003")
@@ -176,8 +178,12 @@ $t("note_013")
 $t("note_014")
     endnote
     
+    }
     fork again
-      :$t("act_023"); <<attn>>
+      !$p_009 = $t("part_009")
+      partition "$p_009" #EBF5FB {
+        :$t("act_023"); <<attn>>
+      }
     end fork
   }
   

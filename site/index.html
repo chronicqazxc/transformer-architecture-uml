@@ -200,7 +200,21 @@ const withLang = (src) => src.replace(/^(!\$lang\s*=\s*)"[\w-]+"/m, `$1"${langSe
 
 // The × only hides the bar for this page view (not stored); a level switch shows the other hint again.
 let hintClosedAt = -1;
+// Generation: the button switches between the two levels and is named after the level it goes TO.
+// Other diagrams have one level, so it stays "Fit" (fit to width).
+const SWITCH = {
+  en: ['High-level', 'Detailed'], 'zh-tw': ['架構總覽', '詳細圖'], ja: ['概要', '詳細'], ko: ['개요', '상세'],
+};
+function updateFitBtn() {
+  const b = $('fitW');
+  if (isGen()) {
+    // level 0 (high-level) -> button says "Detailed"; level 1 (detailed) -> "High-level"
+    b.textContent = SWITCH[langSel.value][level === 0 ? 1 : 0];
+    b.title = b.textContent;
+  } else { b.textContent = 'Fit'; b.title = 'Fit to width'; }
+}
 function updateHint() {
+  updateFitBtn();
   $('hint').hidden = !isGen() || hintClosedAt === level;
   if (isGen()) $('hintText').textContent = HINT[level][langSel.value];
 }
@@ -302,6 +316,7 @@ function setScale(S) {
 }
 function fitWidth() {
   const s = preview.querySelector('svg'); if (!s || !s.dataset.w) return;
+  if (isGen()) return setScale(level === 0 ? bFit() : S_FIT());   // switch level, landing at its fit-to-width start
   setScale(isGen() ? S_FIT() : Math.min(1.2, (preview.clientWidth - 32) / s.dataset.w));
 }
 function syncUrl() {
